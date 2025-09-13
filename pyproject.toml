@@ -5,3 +5,15 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = []
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+select = ["E", "F", "W", "C", "I", "UP"]
+exclude = ["migrations", ".venv", "tests"]
+ignore = ["E701"]
+
+[tool.ruff.format]
+line-length = 100
+quote-style = "double"
+indent-width = 4
