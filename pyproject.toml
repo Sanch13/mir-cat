@@ -11,10 +11,17 @@ dependencies = [
 ]
 
 [tool.ruff]
-src = ["src"]
 line-length = 100
 target-version = "py313"
-exclude = ["migrations", ".venv", "tests"]
+exclude = [
+    "migrations",
+    ".venv",
+    "tests"
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "C", "I", "UP"]
+ignore = ["E701"]
 
 [tool.ruff.format]
 quote-style = "double"
