@@ -1,0 +1,31 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile-local
+    container_name: app
+    expose:
+      - "8000"
+    volumes:
+      - ./src:/app/src
+    command: [
+      "uv",
+      "run",
+      "uvicorn",
+      "--factory",
+      "--reload",
+      "src.main:create_app",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8000"
+    ]
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - local
+
+networks:
+  local:
+    driver: bridge

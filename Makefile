@@ -1,0 +1,25 @@
+# makefile
+DC = docker compose
+EXEC = docker exec -it
+LOGS = docker logs
+ENV = --env-file .env
+APP_FILE = docker_compose_local.yaml
+STORAGES_FILE = docker_compose/storages.yaml
+APP_CONTAINER = app
+
+
+.PHONY: app-local
+app-local:
+	@${DC} -f ${APP_FILE} up --build -d
+
+.PHONY: app-local-down
+app-local-down:
+	@${DC} -f ${APP_FILE} down
+
+.PHONY: app
+app:
+	@${DC} -f ${APP_FILE} up --build -d
+
+.PHONY: app-down
+app-down:
+	@${DC} -f ${APP_FILE} down
