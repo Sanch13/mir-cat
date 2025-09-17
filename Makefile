@@ -10,11 +10,7 @@ APP_CONTAINER = app
 
 .PHONY: app-local
 app-local:
-	@${DC} -f ${APP_FILE} up --build -d
-
-.PHONY: app-local-down
-app-local-down:
-	@${DC} -f ${APP_FILE} down
+	@uv run -m src.main
 
 .PHONY: app
 app:

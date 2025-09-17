@@ -25,4 +25,5 @@ select = ["E", "F", "W", "C", "I", "UP"]
 ignore = ["E701"]
 
 [tool.ruff.format]
+indent-style = "space"
 quote-style = "double"
