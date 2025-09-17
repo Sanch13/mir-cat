@@ -15,6 +15,24 @@ services:
     networks:
       - local
 
+  postgres:
+    image: postgres:17.3-alpine
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - local
+    restart: unless-stopped
+
 networks:
   local:
     driver: bridge
+
+volumes:
+  postgres_data:
