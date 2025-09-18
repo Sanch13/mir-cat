@@ -5,16 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from src.api.first import router as first_router
-
-
-class ServerConfig:
-    """Конфигурация сервера"""
-
-    HOST = "0.0.0.0"
-    PORT = 8000
-    RELOAD = True  # False для программного запуска
-    LOG_LEVEL = "info"  # info для production, debug для разработки
-    USE_COLORS = True
+from src.config.server_settings import server_settings
 
 
 def create_app() -> FastAPI:
@@ -24,10 +15,8 @@ def create_app() -> FastAPI:
         description="Simple DDD example",
         version="1.0.0",
     )
-
     # Подключение роутеров
     app.include_router(first_router)
-
     return app
 
 
@@ -35,15 +24,15 @@ async def start_server(app: FastAPI) -> None:
     """Асинхронный запуск сервера"""
     config = uvicorn.Config(
         app=app,
-        host=ServerConfig.HOST,
-        port=ServerConfig.PORT,
-        reload=ServerConfig.RELOAD,
-        use_colors=ServerConfig.USE_COLORS,
-        log_level=ServerConfig.LOG_LEVEL,
+        host=server_settings.HOST,
+        port=server_settings.PORT,
+        reload=server_settings.RELOAD,
+        use_colors=server_settings.USE_COLORS,
+        log_level=server_settings.LOG_LEVEL,
     )
 
     server = uvicorn.Server(config=config)
-    logging.info(f"Starting server on {ServerConfig.HOST}:{ServerConfig.PORT}")
+    logging.info(f"Starting server on {server_settings.HOST}:{server_settings.PORT}")
 
     await server.serve()
 
@@ -53,7 +42,7 @@ def main() -> None:
 
     # Настройка логирования
     logging.basicConfig(
-        level=getattr(logging, ServerConfig.LOG_LEVEL.upper()),
+        level=getattr(logging, server_settings.LOG_LEVEL.upper()),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
