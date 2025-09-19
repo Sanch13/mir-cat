@@ -10,7 +10,7 @@ APP_CONTAINER = app
 
 .PHONY: app-local
 app-local:
-	@uv run -m src.main
+	@uv run -m backend.src.main
 
 .PHONY: app
 app:

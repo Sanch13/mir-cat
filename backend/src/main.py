@@ -2,10 +2,34 @@ import asyncio
 import logging
 
 import uvicorn
+from dishka import AsyncContainer, make_async_container
+from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
 from backend.src.api.first import router as first_router
 from backend.src.config.server_settings import server_settings
+from backend.src.provides.adapters import ConfigProvider, SqlalchemyProvider
+
+
+def container_factory() -> AsyncContainer:
+    return make_async_container(
+        SqlalchemyProvider(),
+        ConfigProvider(),
+    )
+
+
+def init_di(app: FastAPI) -> None:
+    container = container_factory()
+    setup_dishka(container, app)
+
+
+def init_routes(app: FastAPI) -> None:
+    prefix: str = "/api/v1"
+    app.include_router(
+        router=first_router,
+        prefix=f"{prefix}",
+        tags=["First step"],
+    )
 
 
 def create_app() -> FastAPI:
@@ -15,8 +39,8 @@ def create_app() -> FastAPI:
         description="Simple DDD example",
         version="1.0.0",
     )
-    # Подключение роутеров
-    app.include_router(first_router)
+    init_di(app)
+    init_routes(app)  # Подключение роутеров
     return app
 
 
