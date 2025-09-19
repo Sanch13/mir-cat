@@ -4,8 +4,8 @@ import logging
 import uvicorn
 from fastapi import FastAPI
 
-from src.api.first import router as first_router
-from src.config.server_settings import server_settings
+from backend.src.api.first import router as first_router
+from backend.src.config.server_settings import server_settings
 
 
 def create_app() -> FastAPI:
