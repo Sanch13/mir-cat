@@ -8,10 +8,6 @@ STORAGES_FILE = docker_compose/storages.yaml
 APP_CONTAINER = app
 
 
-.PHONY: app-local
-app-local:
-	@uv run -m backend.src.main
-
 .PHONY: app
 app:
 	@${DC} -f ${APP_FILE} up --build -d

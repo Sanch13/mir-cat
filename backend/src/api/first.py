@@ -6,39 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter(route_class=DishkaRoute)
 
 
-@router.get("/check-version")  # простой URL
+@router.get("/hello")  # простой URL
 async def greet(session: FromDishka[AsyncSession]) -> str:
-    result = await session.execute(text("SELECT version()"))
-    version = result.scalar()
-
-    return f"Database version: {version}"
-
-
-@router.get("/check-users")
-async def check_users_table(session: FromDishka[AsyncSession]) -> str:
-    # Проверяем, существует ли таблица users
-    result = await session.execute(
-        text("""
-        SELECT EXISTS (
-            SELECT FROM information_schema.tables
-            WHERE table_schema = 'public'
-            AND table_name = 'users'
-        )
-    """)
-    )
-    table_exists = result.scalar()
-    return f"Users table exists: {table_exists}"
-
-
-@router.get("/db-check")
-async def database_check(session: FromDishka[AsyncSession]) -> str:
-    try:
-        # Простой запрос для проверки подключения
-        result = await session.execute(text("SELECT 1"))
-        test_result = result.scalar()
-        return f"Database connection successful! Test result: {test_result}"
-    except Exception as e:
-        return f"Database connection failed: {str(e)}"
+    return "Answer: Good morning AXAXAAX"
 
 
 @router.get("/db-info")
