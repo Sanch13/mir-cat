@@ -6,7 +6,9 @@ from sqlalchemy import URL
 
 
 class DBSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file="../../.env", env_ignore_empty=True, extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file="../../../.env", env_ignore_empty=True, extra="ignore"
+    )
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
@@ -31,6 +33,21 @@ class DBSettings(BaseSettings):
         """
         uri = URL.create(
             drivername="postgresql+asyncpg",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.DB_HOST,
+            port=self.DB_PORT,
+            database=self.POSTGRES_DB,
+        )
+        return uri.render_as_string(hide_password=False)
+
+    @property
+    def construct_sync_sqlalchemy_url(self) -> str:
+        """
+        Constructs and returns a SQLAlchemy URL for this database configuration.
+        """
+        uri = URL.create(
+            drivername="postgresql+psycopg2",
             username=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
             host=self.DB_HOST,

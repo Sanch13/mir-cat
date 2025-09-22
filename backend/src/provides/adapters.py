@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from backend.src.config.db_settings import DBSettings
+from src.config.db_settings import DBSettings, db_settings
 
 
 class SqlalchemyProvider(Provider):
@@ -42,4 +42,4 @@ class SqlalchemyProvider(Provider):
 class ConfigProvider(Provider):
     @provide(scope=Scope.APP)
     def provide_db_settings(self) -> DBSettings:
-        return DBSettings()
+        return db_settings

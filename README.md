@@ -1,2 +1,5 @@
 TODO: set up alembic, set up connect db
-  Please edit configuration/connection/logging settings in '/home/sanch/Projects/mir-cat/alembic.ini' before proceeding.
+
+
+1) UUID (как id) - генерация на стороне БД или сервера? Как правильно?
+2)

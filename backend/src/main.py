@@ -6,9 +6,9 @@ from dishka import AsyncContainer, make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
-from backend.src.api.first import router as first_router
-from backend.src.config.server_settings import server_settings
-from backend.src.provides.adapters import ConfigProvider, SqlalchemyProvider
+from src.api.first import router as first_router
+from src.config.server_settings import server_settings
+from src.provides.adapters import ConfigProvider, SqlalchemyProvider
 
 
 def container_factory() -> AsyncContainer:
