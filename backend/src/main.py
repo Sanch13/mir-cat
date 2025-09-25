@@ -7,6 +7,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
 from src.api.first import router as first_router
+from src.apps.admin.make_admins import make_amis_admin, make_crud_admin, make_sql_admin
 from src.config.server_settings import server_settings
 from src.provides.adapters import ConfigProvider, SqlalchemyProvider
 
@@ -41,6 +42,11 @@ def create_app() -> FastAPI:
     )
     init_di(app)
     init_routes(app)  # Подключение роутеров
+
+    make_sql_admin(app=app)
+    make_amis_admin(app=app)
+    make_crud_admin(app=app)
+
     return app
 
 

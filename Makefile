@@ -9,6 +9,11 @@ APP_CONTAINER = app
 SERVICE_NAME = fastapi_app
 
 
+.PHONY: app-logs
+app-logs:  # запускает приложение и применяет все миграции
+	@${DC} -f ${LOCAL_FILE} up --build
+	@$(MAKE) migrate-up
+
 .PHONY: app
 app:  # запускает приложение и применяет все миграции
 	@${DC} -f ${LOCAL_FILE} up --build -d

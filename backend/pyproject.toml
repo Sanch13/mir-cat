@@ -7,8 +7,10 @@ requires-python = ">=3.13"
 dependencies = [
     "alembic==1.16.5",
     "asyncpg==0.30.0",
+    "crudadmin>=0.4.2",
     "dishka==1.7.1",
     "fastapi==0.116.1",
+    "fastapi-amis-admin>=0.7.3",
     "psycopg2-binary==2.9.10",
     "pydantic==2.11.9",
     "pydantic-settings==2.10.1",
