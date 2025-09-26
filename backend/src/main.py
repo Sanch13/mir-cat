@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from contextlib import asynccontextmanager
 
 import uvicorn
 from dishka import AsyncContainer, make_async_container
@@ -33,9 +34,20 @@ def init_routes(app: FastAPI) -> None:
     )
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize database tables
+    crud_admin = await make_crud_admin()
+    crud_admin.mount_to(app)
+    # Initialize admin interface
+    await crud_admin.initialize()
+    yield
+
+
 def create_app() -> FastAPI:
     """Фабрика для создания FastAPI приложения"""
     app = FastAPI(
+        lifespan=lifespan,
         title="Simple APP",
         description="Simple DDD example",
         version="1.0.0",
@@ -45,8 +57,6 @@ def create_app() -> FastAPI:
 
     make_sql_admin(app=app)
     make_amis_admin(app=app)
-    make_crud_admin(app=app)
-
     return app
 
 

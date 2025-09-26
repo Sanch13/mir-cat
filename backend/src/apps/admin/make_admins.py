@@ -67,11 +67,12 @@ def make_amis_admin(app):
     admin_site.mount_app(app)
 
 
-def make_crud_admin(app):
+async def make_crud_admin():
     # Создаем админку
     crud_admin = CRUDAdmin(
         session=get_session,
         SECRET_KEY="asdasd",  # pragma: allowlist secret
+        initial_admin={"username": "admin", "password": "admin123"},  # pragma: allowlist secret
     )
     crud_admin.add_view(
         model=UserModel,
@@ -79,4 +80,5 @@ def make_crud_admin(app):
         update_schema=UserUpdate,
         allowed_actions={"view", "create", "update", "delete"},
     )
-    app.mount("/crud-admin", crud_admin.app)
+
+    return crud_admin
