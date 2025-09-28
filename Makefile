@@ -8,6 +8,9 @@ STORAGES_FILE = docker_compose/storages.yaml
 APP_CONTAINER = app
 SERVICE_NAME = fastapi_app
 
+.PHONY: app-sync
+app-sync:  #
+	@cd backend && uv sync
 
 .PHONY: app-logs
 app-logs:  # запускает приложение и применяет все миграции с логами в консоли
