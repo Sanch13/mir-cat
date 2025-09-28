@@ -45,7 +45,6 @@ class UserEntity:
         self.is_superuser = is_superuser
         self.is_active = is_active
         self._id = id_ or UserIdVo(uuid.uuid4())
-        print(self.last_name)
 
     @property
     def id(self) -> UserIdVo:
