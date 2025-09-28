@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from contextlib import asynccontextmanager
 
 import uvicorn
 from dishka import AsyncContainer, make_async_container
@@ -7,6 +8,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
 from src.api.first import router as first_router
+from src.apps.admin import init_sql_admin
 from src.config.server_settings import server_settings
 from src.provides.adapters import ConfigProvider, SqlalchemyProvider
 
@@ -32,15 +34,23 @@ def init_routes(app: FastAPI) -> None:
     )
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+
+
 def create_app() -> FastAPI:
     """Фабрика для создания FastAPI приложения"""
     app = FastAPI(
+        lifespan=lifespan,
         title="Simple APP",
         description="Simple DDD example",
         version="1.0.0",
     )
     init_di(app)
     init_routes(app)  # Подключение роутеров
+
+    init_sql_admin(app=app)
     return app
 
 
