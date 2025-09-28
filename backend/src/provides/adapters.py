@@ -14,15 +14,15 @@ from src.config.db_settings import DBSettings, db_settings
 
 class SqlalchemyProvider(Provider):
     @provide(scope=Scope.APP)
-    def provide_engine(self, db_config: DBSettings) -> AsyncEngine:
+    def provide_async_engine(self, db_config: DBSettings) -> AsyncEngine:
         return create_async_engine(db_config.construct_sqlalchemy_url)
 
     @provide(scope=Scope.APP)
-    def provide_sessionmaker(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
+    def provide_async_sessionmaker(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
         return async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 
     @provide(scope=Scope.REQUEST, provides=AsyncSession)
-    async def provide_session(
+    async def provide_async_session(
         self, sessionmaker: async_sessionmaker[AsyncSession]
     ) -> AsyncIterable[AsyncSession]:
         async with sessionmaker() as session:

@@ -10,7 +10,7 @@ SERVICE_NAME = fastapi_app
 
 
 .PHONY: app-logs
-app-logs:  # запускает приложение и применяет все миграции
+app-logs:  # запускает приложение и применяет все миграции с логами в консоли
 	@${DC} -f ${LOCAL_FILE} up --build
 	@$(MAKE) migrate-up
 

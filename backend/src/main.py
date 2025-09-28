@@ -8,7 +8,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
 from src.api.first import router as first_router
-from src.apps.admin.make_admins import make_amis_admin, make_crud_admin, make_sql_admin
+from src.apps.admin import init_sql_admin
 from src.config.server_settings import server_settings
 from src.provides.adapters import ConfigProvider, SqlalchemyProvider
 
@@ -36,11 +36,6 @@ def init_routes(app: FastAPI) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize database tables
-    crud_admin = await make_crud_admin()
-    crud_admin.mount_to(app)
-    # Initialize admin interface
-    await crud_admin.initialize()
     yield
 
 
@@ -55,8 +50,7 @@ def create_app() -> FastAPI:
     init_di(app)
     init_routes(app)  # Подключение роутеров
 
-    make_sql_admin(app=app)
-    make_amis_admin(app=app)
+    init_sql_admin(app=app)
     return app
 
 
