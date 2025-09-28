@@ -1,5 +1,4 @@
-from src.api.schemas.user import UserResponseSchema, UserCreateSchema
-from src.data_access.models import UserModel
+from src.api.user.schemas import UserResponseSchema, UserCreateSchema
 from src.domain.user.dtos import UserOutputDto, UserInputDto
 
 

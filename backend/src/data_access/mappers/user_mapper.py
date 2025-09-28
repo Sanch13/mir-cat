@@ -11,7 +11,7 @@ from src.domain.user.value_objects import (
 )
 
 
-class UserMapper:
+class UserModelMapper:
 
     @staticmethod
     def entity_to_model(entity: UserEntity) -> UserModel:

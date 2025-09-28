@@ -1,5 +1,5 @@
 import uuid
-from typing import Self
+from datetime import datetime, UTC
 
 from src.domain.user.value_objects import (
     UserIdVo,
@@ -11,7 +11,7 @@ from src.domain.user.value_objects import (
     UserLastNameVo
 )
 from src.shared.decriptor import ValidatedField
-from src.shared.exceptions import InvalidTypeError, EntityWithoutIdHashError
+from src.shared.exceptions import InvalidTypeError
 
 
 class UserEntity:
@@ -38,13 +38,14 @@ class UserEntity:
     ) -> None:
         self.email = email
         self.password = password
-        self.created_at = created_at
-        self.updated_at = updated_at
+        self.created_at = created_at or UserCreatedAtVo(datetime.now(UTC))
+        self.updated_at = updated_at or UserUpdatedAtVo(self.created_at.value)
         self.first_name = first_name
         self.last_name = last_name
         self.is_superuser = is_superuser
         self.is_active = is_active
-        self._id = id_
+        self._id = id_ or UserIdVo(uuid.uuid4())
+        print(self.last_name)
 
     @property
     def id(self) -> UserIdVo:
@@ -64,74 +65,8 @@ class UserEntity:
             })
         self._id = value
 
-
-    def __eq__(self, other: Self | object) -> bool:
-        """
-        Compare two entities by their ID.
-
-        Args:
-            other (Any): Another object to compare with.
-
-        Returns:
-            bool: True if both objects are entities and have the same ID,
-                  False otherwise.
-        """
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        if self.id is None or other.id is None:
-            return NotImplemented
-        return self.id == other.id
-
-    def __hash__(self) -> int:
-        if self.id is None:
-            raise EntityWithoutIdHashError(message_to_extend={"entity": self.__class__.__name__})
-        return hash((self.__class__, self.id))
-
+    # TODO: проверить необходимость
     def __repr__(self) -> str:
         if self.id is not None:
             return f"{self.__class__.__name__} (ID: {self.id.value}, email: {self.email.value}) "
         return f"{self.__class__.__name__} (no ID, email: {self.email.value})"
-
-
-uuid_u1 = UserIdVo(uuid.uuid4())
-u1 = UserEntity(id_=uuid_u1, email=UserEmailVo('ghjgh@gmai.ru'), password=UserPasswordVo('knknikinini'))
-u2 = UserEntity(id_=uuid_u1, email=UserEmailVo('ghjgh@gmii.ru'), password=UserPasswordVo('knknikijuoinini'))
-u1.is_superuser = False
-u1.first_name = UserFirstNameVo('kjknh')
-print(u1.is_superuser)
-print(u1.first_name.value)
-print(u1==u2)
-
-
-
-
-# @dataclass
-# class User:
-#     """ Доменная сущность User """
-#     id: UserId
-#
-#
-#     @staticmethod
-#     def create(
-#             email: str,
-#             password: str,
-#             first_name: str | None = None,
-#             last_name: str | None = None,
-#             is_superuser: bool = False,
-#             is_active: bool = True
-#     ) -> "User":
-#                 return User(
-#                     id=UserId(value=uuid4()),
-#                     email=UserEmailVO(email),
-#                     password=UserPasswordVO(password),
-#                     created_at=UserCreatedAtVO(datetime.now()),
-#                     updated_at=UserUpdatedAtVO(datetime.now()),
-#                     first_name=UserFirstName(first_name) if first_name else None,
-#                     last_name=UserLastName(last_name) if last_name else None,
-#                     is_superuser=is_superuser,
-#                     is_active=is_active
-#                 )
-#
-# u = User.create(email='jj', password='jjj')
-# print(u)
-#

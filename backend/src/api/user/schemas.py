@@ -6,13 +6,13 @@ class UserUpdateSchema(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     email: str
-    is_superuser: bool | None = False
-    is_active: bool | None = False
+    is_superuser: bool | None = None
+    is_active: bool | None = None
 
 class UserCreateSchema(UserUpdateSchema):
     password: str
 
-class UserResponseSchema(BaseModel):
+class UserResponseSchema(UserUpdateSchema):
     email: str
     first_name: str
     last_name: str

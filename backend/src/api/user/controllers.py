@@ -3,9 +3,8 @@ from uuid import UUID
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter
 
-
-from src.api.mappers.user import UserApiMapper
-from src.api.schemas.user import UserResponseSchema, UserCreateSchema
+from src.api.user.mappers import UserApiMapper
+from src.api.user.schemas import UserResponseSchema, UserCreateSchema
 from src.apps.user.use_cases.create_use_case import UserCreateUseCase
 from src.apps.user.use_cases.get_by_id_use_case import UserGetByIdUseCase
 

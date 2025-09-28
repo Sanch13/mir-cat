@@ -8,8 +8,8 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
 from src.api.first import router as first_router
+from src.api.user.controllers import router as user_router
 from src.apps.admin import init_sql_admin
-from src.api.controllers.user import router as user_router
 from src.config.server_settings import server_settings
 from src.provides.adapters import ConfigProvider, SqlalchemyProvider, RepositoryProvider
 from src.provides.usecases import UserUseCaseProvider
