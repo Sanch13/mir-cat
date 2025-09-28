@@ -10,12 +10,12 @@ SERVICE_NAME = fastapi_app
 
 .PHONY: app-sync
 app-sync:  #
-	@cd backend && uv sync
+	@cd backend && uv sync && cd ..
 
 .PHONY: app-logs
-app-logs:  # запускает приложение и применяет все миграции с логами в консоли
+app-logs:  # запускает приложение с логами в консоли
+	@$(MAKE) app-sync
 	@${DC} -f ${LOCAL_FILE} up --build
-	@$(MAKE) migrate-up
 
 .PHONY: app
 app:  # запускает приложение и применяет все миграции
