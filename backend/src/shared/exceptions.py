@@ -12,14 +12,14 @@ class InvalidTypeError(TemplateAppError):
     MESSAGE_TEMPLATE = "Expected type '{expected_type}' for field '{attr_name}', but got '{actual_type}' with value: '{value}'"
 
 
-class IDNegativeError(TemplateAppError):
-    """ID negative error."""
+class FieldNegativeError(TemplateAppError):
+    """Negative error."""
 
     MESSAGE_TEMPLATE = "Field '{attr_name}' cannot be negative, but got value: {value}"
 
 
 class FieldZeroError(TemplateAppError):
-    """ID zero error."""
+    """Zero error."""
 
     MESSAGE_TEMPLATE = "Field '{attr_name}' cannot be zero"
 

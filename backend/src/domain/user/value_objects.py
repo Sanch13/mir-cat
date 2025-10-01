@@ -19,7 +19,7 @@ class UserIdVo(UuidVo):
     """
     pass
 
-
+#TODO: Установить дополнительные требования к паролю при валидации.
 @dataclass(frozen=True)
 class UserPasswordVo(StrWithSizeVo):
     """
@@ -32,11 +32,9 @@ class UserPasswordVo(StrWithSizeVo):
     Constraints:
         Minimum length: MIN_PASSWORD_LENGTH characters
         Maximum length: MAX_PASSWORD_LENGTH characters
-
-    TO_DO: Установить дополнительные требования к паролю при валидации.
     """
-    _MIN_SIZE: ClassVar[int] = MIN_PASSWORD_LENGTH
-    _MAX_SIZE: ClassVar[int] = MAX_PASSWORD_LENGTH
+    MIN_SIZE: ClassVar[int] = MIN_PASSWORD_LENGTH
+    MAX_SIZE: ClassVar[int] = MAX_PASSWORD_LENGTH
 
 
 @dataclass(frozen=True)
@@ -45,10 +43,6 @@ class UserCreatedAtVo(DatetimeVo):
     User creation timestamp Value Object.
 
     Represents the exact datetime when a user account was created.
-
-    Example:
-        >>> from datetime import datetime
-        >>> created_at = UserCreatedAtVo(datetime(2023, 12, 31, 14, 30, 0))
     """
     pass
 
@@ -60,10 +54,6 @@ class UserUpdatedAtVo(DatetimeVo):
 
     Represents the last datetime when user information was modified.
     Should be updated on every user profile change.
-
-    Example:
-        >>> from datetime import datetime
-        >>> updated_at = UserUpdatedAtVo(datetime(2024, 1, 15, 10, 0, 0))
     """
     pass
 
@@ -80,7 +70,7 @@ class UserFirstNameVo(StrWithSizeVo):
     Constraints:
         Maximum length: MAX_NAME_LENGTH characters
     """
-    _MAX_SIZE: ClassVar[int] = MAX_NAME_LENGTH
+    MAX_SIZE: ClassVar[int] = MAX_NAME_LENGTH
 
 
 @dataclass(frozen=True)
@@ -96,7 +86,7 @@ class UserLastNameVo(StrWithSizeVo):
         Maximum length: MAX_NAME_LENGTH characters
 
     """
-    _MAX_SIZE: ClassVar[int] = MAX_NAME_LENGTH
+    MAX_SIZE: ClassVar[int] = MAX_NAME_LENGTH
 
 
 @dataclass(frozen=True)
@@ -119,13 +109,9 @@ class UserEmailVo(StrWithSizeVo):
         - Domain must contain a dot
         - Local part cannot start/end with dot
         - Local part cannot contain consecutive dots
-
-    Example:
-        >>> valid_email = UserEmailVo("user@example.com")
-        >>> invalid_email = UserEmailVo("invalid.email")  # Raises InvalidFormatError
     """
-    _MIN_SIZE: ClassVar[int] = MIN_EMAIL_LENGTH
-    _MAX_SIZE: ClassVar[int] = MAX_EMAIL_LENGTH
+    MIN_SIZE: ClassVar[int] = MIN_EMAIL_LENGTH
+    MAX_SIZE: ClassVar[int] = MAX_EMAIL_LENGTH
 
     def __post_init__(self):
         """
@@ -218,11 +204,6 @@ class UserEmailVo(StrWithSizeVo):
 
         Returns:
             str: Domain portion after @ symbol
-
-        Example:
-            >>> email = UserEmailVo("user@example.com")
-            >>> email.domain
-            'example.com'
         """
         return self.value.split('@')[1]
 
@@ -233,10 +214,5 @@ class UserEmailVo(StrWithSizeVo):
 
         Returns:
             str: Local portion before @ symbol
-
-        Example:
-            >>> email = UserEmailVo("user.name@example.com")
-            >>> email.local_part
-            'user.name'
         """
         return self.value.split('@')[0]

@@ -3,7 +3,13 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
-from src.shared.exceptions import InvalidTypeError, FieldTooLongError, FieldTooShortError
+from src.shared.exceptions import (
+    InvalidTypeError,
+    FieldTooLongError,
+    FieldTooShortError,
+    FieldNegativeError,
+    FieldZeroError
+)
 
 
 @dataclass(frozen=True)
@@ -19,11 +25,6 @@ class UuidVo:
 
     Raises:
         InvalidTypeError: If value is not a UUID instance
-
-    Example:
-        >>> from uuid import UUID
-        >>> valid_uuid = UuidVo(UUID('12345678-1234-5678-1234-567812345678'))
-        >>> invalid_uuid = UuidVo("not-a-uuid")  # Raises InvalidTypeError
     """
     value: UUID
 
@@ -56,10 +57,6 @@ class IntVo:
 
     Raises:
         InvalidTypeError: If value is not an integer
-
-    Example:
-        >>> valid_int = IntVo(42)
-        >>> invalid_int = IntVo("42")  # Raises InvalidTypeError
     """
     value: int
 
@@ -78,6 +75,20 @@ class IntVo:
                 'value': self.value
             })
 
+@dataclass(frozen=True)
+class PositiveIntVo(IntVo):
+    def __post_init__(self):
+        super().__post_init__()
+        if self.value < 0:
+            raise FieldNegativeError(message_to_extend={
+                'attr_name': 'value of PositiveIntVo',
+                'value': self.value,
+            })
+        elif self.value == 0:
+            raise FieldZeroError(message_to_extend={
+                'attr_name': 'value of PositiveIntVo',
+            })
+
 
 @dataclass(frozen=True)
 class DatetimeVo:
@@ -92,11 +103,6 @@ class DatetimeVo:
 
     Raises:
         InvalidTypeError: If value is not a datetime instance
-
-    Example:
-        >>> from datetime import datetime
-        >>> valid_dt = DatetimeVo(datetime(2023, 12, 31, 23, 59, 59))
-        >>> invalid_dt = DatetimeVo("2023-12-31")  # Raises InvalidTypeError
     """
     value: datetime
 
@@ -129,10 +135,6 @@ class StrVo:
 
     Raises:
         InvalidTypeError: If value is not a string
-
-    Example:
-        >>> valid_str = StrVo("hello world")
-        >>> invalid_str = StrVo(123)  # Raises InvalidTypeError
     """
     value: str
 
@@ -152,9 +154,9 @@ class StrVo:
             })
 
 @dataclass(frozen=True)
-class StrWithSizeVo(StrVo, ABC):
+class StrWithSizeVo(StrVo):
     """
-    Abstract base class for string Value Objects with size constraints.
+    Base class for string Value Objects with size constraints.
 
     This class extends StrVo to add minimum and maximum length validation.
     Subclasses should define _MIN_SIZE and/or _MAX_SIZE class variables
@@ -168,17 +170,7 @@ class StrWithSizeVo(StrVo, ABC):
     Raises:
         FieldTooShortError: If value length is less than min_size
         FieldTooLongError: If value length is greater than max_size
-
-    Example:
-        >>> @dataclass(frozen=True)
-        ... class UserName(StrWithSizeVo):
-        ...     _MIN_SIZE: ClassVar[int] = 3
-        ...     _MAX_SIZE: ClassVar[int] = 20
-        ...
-        >>> valid_name = UserName("john_doe")  # OK
-        >>> invalid_name = UserName("a")       # Raises FieldTooShortError
     """
-    value: str
 
     @property
     def min_size(self) -> int:
@@ -192,7 +184,7 @@ class StrWithSizeVo(StrVo, ABC):
             Uses getattr() to safely retrieve _MIN_SIZE from subclass.
             Returns None if _MIN_SIZE is not defined.
         """
-        return getattr(self, '_MIN_SIZE', None)
+        return getattr(self, 'MIN_SIZE', None)
 
     @property
     def max_size(self) -> int:
@@ -206,7 +198,7 @@ class StrWithSizeVo(StrVo, ABC):
             Uses getattr() to safely retrieve _MAX_SIZE from subclass.
             Returns None if _MAX_SIZE is not defined.
         """
-        return getattr(self, '_MAX_SIZE', None)
+        return getattr(self, 'MAX_SIZE', None)
 
     def __post_init__(self):
         """
@@ -245,4 +237,3 @@ class StrWithSizeVo(StrVo, ABC):
                 'current_length': length,
                 'value': self.value
             })
-

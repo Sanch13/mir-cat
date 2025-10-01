@@ -18,6 +18,7 @@ async def get_by_id(user_id: UUID,
     dto = await use_case.execute(user_id)
     return UserApiMapper.dto_to_schema(dto)
 
+#TODO установить ResponseSchema
 @router.post("/")
 async def create(user_data: UserCreateSchema,
                  use_case: FromDishka[UserCreateUseCase]

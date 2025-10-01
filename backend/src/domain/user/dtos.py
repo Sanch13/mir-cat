@@ -12,6 +12,7 @@ class UserInputDto:
     is_superuser: bool = False
     is_active: bool = True
 
+#ToDo: понять используется ли пароль в ДТО.
 @dataclass
 class UserOutputDto:
     id: UUID
