@@ -45,6 +45,6 @@ class UserAdmin(ModelView, model=UserModel):
         """
         try:
             dto = UserInputDto(**data)
-            user = UserDomainMapper.input_dto_to_entity(dto)
+            UserDomainMapper.input_dto_to_entity(dto)
         except Exception as e:
             raise InvalidAdminUserDataError(message=f'Введенные в адмике данные пользователя не валидны: {str(e)}')
