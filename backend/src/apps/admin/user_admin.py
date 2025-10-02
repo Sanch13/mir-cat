@@ -1,6 +1,12 @@
-from sqladmin import ModelView
+from typing import Any
 
+from sqladmin import ModelView
+from starlette.requests import Request
+
+from src.apps.admin.exception import InvalidAdminUserDataError
 from src.data_access.models import UserModel
+from src.domain.user.dtos import UserInputDto
+from src.domain.user.mappers import UserDomainMapper
 
 
 class UserAdmin(ModelView, model=UserModel):
@@ -30,3 +36,15 @@ class UserAdmin(ModelView, model=UserModel):
         UserModel.is_active,
         UserModel.is_superuser,
     ]
+
+    async def on_model_change(
+        self, data: dict, model: Any, is_created: bool, request: Request
+    ) -> None:
+        """Perform some actions before a model is created or updated.
+        By default does nothing.
+        """
+        try:
+            dto = UserInputDto(**data)
+            user = UserDomainMapper.input_dto_to_entity(dto)
+        except Exception as e:
+            raise InvalidAdminUserDataError(message=f'Введенные в адмике данные пользователя не валидны: {str(e)}')
