@@ -1,9 +1,9 @@
-from typing import Any, TypeVar
+from typing import Any, Generic, TypeVar
 
 T = TypeVar("T")
 
 
-class ValidatedField(T):
+class ValidatedField(Generic[T]):  # noqa: UP046
     """
     Дескриптор для валидации и хранения значений атрибутов объекта с проверками типа,
     значений на `None`, длины строки (если применимо) и других пользовательских ограничений.
