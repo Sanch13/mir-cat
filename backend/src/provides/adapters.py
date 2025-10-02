@@ -9,7 +9,9 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from src.apps.user.irepo import IUserRepository
 from src.config.db_settings import DBSettings, db_settings
+from src.data_access.repositories.user_repo import UserRepository
 
 
 class SqlalchemyProvider(Provider):
@@ -43,3 +45,8 @@ class ConfigProvider(Provider):
     @provide(scope=Scope.APP)
     def provide_db_settings(self) -> DBSettings:
         return db_settings
+
+class RepositoryProvider(Provider):
+    scope = Scope.REQUEST
+
+    user_repository = provide(UserRepository, provides=IUserRepository)
