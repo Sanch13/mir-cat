@@ -45,6 +45,15 @@ class UserAdmin(ModelView, model=UserModel):
         """
         try:
             dto = UserInputDto(**data)
-            UserDomainMapper.input_dto_to_entity(dto)
+            user = UserDomainMapper.input_dto_to_entity(dto)
+
+            if is_created:
+                model.id = user.id.value
+                model.created_at = user.created_at.value
+
+            model.updated_at = user.updated_at.value
+
         except Exception as e:
-            raise InvalidAdminUserDataError(message=f'Введенные в адмике данные пользователя не валидны: {str(e)}')
+            raise InvalidAdminUserDataError(
+                message=f"Данные пользователя в адмике не валидны: {str(e)}"
+            )
