@@ -1,18 +1,17 @@
 from src.data_access.models import UserModel
 from src.domain.user.entity import UserEntity
 from src.domain.user.value_objects import (
-    UserEmailVo,
-    UserPasswordVo,
-    UserFirstNameVo,
-    UserLastNameVo,
     UserCreatedAtVo,
+    UserEmailVo,
+    UserFirstNameVo,
+    UserIdVo,
+    UserLastNameVo,
+    UserPasswordVo,
     UserUpdatedAtVo,
-    UserIdVo
 )
 
 
 class UserModelMapper:
-
     @staticmethod
     def entity_to_model(entity: UserEntity) -> UserModel:
         return UserModel(
@@ -29,12 +28,12 @@ class UserModelMapper:
     def model_to_entity(model: UserModel) -> UserEntity:
         return UserEntity(
             id_=UserIdVo(model.id),
-            email = UserEmailVo(model.email),
-            password = UserPasswordVo(model.password),
-            first_name = UserFirstNameVo(model.first_name) if model.first_name else None,
-            last_name = UserLastNameVo(model.first_name) if model.first_name else None,
-            is_superuser = model.is_superuser,
-            is_active = model.is_active,
-            created_at = UserCreatedAtVo(model.created_at),
-            updated_at = UserUpdatedAtVo(model.updated_at)
+            email=UserEmailVo(model.email),
+            password=UserPasswordVo(model.password),
+            first_name=UserFirstNameVo(model.first_name) if model.first_name else None,
+            last_name=UserLastNameVo(model.first_name) if model.first_name else None,
+            is_superuser=model.is_superuser,
+            is_active=model.is_active,
+            created_at=UserCreatedAtVo(model.created_at),
+            updated_at=UserUpdatedAtVo(model.updated_at),
         )

@@ -1,5 +1,6 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
+
+from pydantic import BaseModel
 
 
 class UserUpdateSchema(BaseModel):
@@ -9,8 +10,10 @@ class UserUpdateSchema(BaseModel):
     is_superuser: bool | None = None
     is_active: bool | None = None
 
+
 class UserCreateSchema(UserUpdateSchema):
     password: str
+
 
 class UserResponseSchema(UserUpdateSchema):
     email: str

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 from src.shared.exceptions import InvalidFormatError
-from src.shared.value_objects import UuidVo, StrWithSizeVo, DatetimeVo
+from src.shared.value_objects import DatetimeVo, StrWithSizeVo, UuidVo
 
 MIN_PASSWORD_LENGTH = 5
 MAX_PASSWORD_LENGTH = 15
@@ -17,9 +17,11 @@ class UserIdVo(UuidVo):
     User ID Value Object representing a unique user identifier.
     Inherits all UUID validation from UuidVo base class.
     """
+
     pass
 
-#TODO: Установить дополнительные требования к паролю при валидации.
+
+# TODO: Установить дополнительные требования к паролю при валидации.
 @dataclass(frozen=True)
 class UserPasswordVo(StrWithSizeVo):
     """
@@ -33,6 +35,7 @@ class UserPasswordVo(StrWithSizeVo):
         Minimum length: MIN_PASSWORD_LENGTH characters
         Maximum length: MAX_PASSWORD_LENGTH characters
     """
+
     MIN_SIZE: ClassVar[int] = MIN_PASSWORD_LENGTH
     MAX_SIZE: ClassVar[int] = MAX_PASSWORD_LENGTH
 
@@ -44,6 +47,7 @@ class UserCreatedAtVo(DatetimeVo):
 
     Represents the exact datetime when a user account was created.
     """
+
     pass
 
 
@@ -55,6 +59,7 @@ class UserUpdatedAtVo(DatetimeVo):
     Represents the last datetime when user information was modified.
     Should be updated on every user profile change.
     """
+
     pass
 
 
@@ -70,6 +75,7 @@ class UserFirstNameVo(StrWithSizeVo):
     Constraints:
         Maximum length: MAX_NAME_LENGTH characters
     """
+
     MAX_SIZE: ClassVar[int] = MAX_NAME_LENGTH
 
 
@@ -86,6 +92,7 @@ class UserLastNameVo(StrWithSizeVo):
         Maximum length: MAX_NAME_LENGTH characters
 
     """
+
     MAX_SIZE: ClassVar[int] = MAX_NAME_LENGTH
 
 
@@ -110,6 +117,7 @@ class UserEmailVo(StrWithSizeVo):
         - Local part cannot start/end with dot
         - Local part cannot contain consecutive dots
     """
+
     MIN_SIZE: ClassVar[int] = MIN_EMAIL_LENGTH
     MAX_SIZE: ClassVar[int] = MAX_EMAIL_LENGTH
 
@@ -139,36 +147,44 @@ class UserEmailVo(StrWithSizeVo):
         Raises:
             InvalidFormatError: If basic email structure is invalid
         """
-        if '@' not in self.value:
-            raise InvalidFormatError(message_to_extend={
-                'attr_name': self.__class__.__name__,
-                'expected_format': 'email must contain @ symbol',
-                'value': self.value
-            })
+        if "@" not in self.value:
+            raise InvalidFormatError(
+                message_to_extend={
+                    "attr_name": self.__class__.__name__,
+                    "expected_format": "email must contain @ symbol",
+                    "value": self.value,
+                }
+            )
 
-        parts = self.value.split('@')
+        parts = self.value.split("@")
         if len(parts) != 2:
-            raise InvalidFormatError(message_to_extend={
-                'attr_name': self.__class__.__name__,
-                'expected_format': 'email must have exactly one @ symbol',
-                'value': self.value
-            })
+            raise InvalidFormatError(
+                message_to_extend={
+                    "attr_name": self.__class__.__name__,
+                    "expected_format": "email must have exactly one @ symbol",
+                    "value": self.value,
+                }
+            )
 
         local_part, domain = parts
 
         if not local_part or not domain:
-            raise InvalidFormatError(message_to_extend={
-                'attr_name': self.__class__.__name__,
-                'expected_format': 'email must have both local part and domain',
-                'value': self.value
-            })
+            raise InvalidFormatError(
+                message_to_extend={
+                    "attr_name": self.__class__.__name__,
+                    "expected_format": "email must have both local part and domain",
+                    "value": self.value,
+                }
+            )
 
-        if '.' not in domain:
-            raise InvalidFormatError(message_to_extend={
-                'attr_name': self.__class__.__name__,
-                'expected_format': 'domain must contain a dot',
-                'value': self.value
-            })
+        if "." not in domain:
+            raise InvalidFormatError(
+                message_to_extend={
+                    "attr_name": self.__class__.__name__,
+                    "expected_format": "domain must contain a dot",
+                    "value": self.value,
+                }
+            )
 
     def _validate_specific_rules(self):
         """
@@ -183,19 +199,23 @@ class UserEmailVo(StrWithSizeVo):
         # Local part validation (before @)
         local_part = self.local_part
 
-        if local_part.startswith('.') or local_part.endswith('.'):
-            raise InvalidFormatError(message_to_extend={
-                'attr_name': self.__class__.__name__,
-                'expected_format': 'local part cannot start or end with dot',
-                'value': self.value
-            })
+        if local_part.startswith(".") or local_part.endswith("."):
+            raise InvalidFormatError(
+                message_to_extend={
+                    "attr_name": self.__class__.__name__,
+                    "expected_format": "local part cannot start or end with dot",
+                    "value": self.value,
+                }
+            )
 
-        if '..' in local_part:
-            raise InvalidFormatError(message_to_extend={
-                'attr_name': self.__class__.__name__,
-                'expected_format': 'local part cannot contain consecutive dots',
-                'value': self.value
-            })
+        if ".." in local_part:
+            raise InvalidFormatError(
+                message_to_extend={
+                    "attr_name": self.__class__.__name__,
+                    "expected_format": "local part cannot contain consecutive dots",
+                    "value": self.value,
+                }
+            )
 
     @property
     def domain(self) -> str:
@@ -205,7 +225,7 @@ class UserEmailVo(StrWithSizeVo):
         Returns:
             str: Domain portion after @ symbol
         """
-        return self.value.split('@')[1]
+        return self.value.split("@")[1]
 
     @property
     def local_part(self) -> str:
@@ -215,4 +235,4 @@ class UserEmailVo(StrWithSizeVo):
         Returns:
             str: Local portion before @ symbol
         """
-        return self.value.split('@')[0]
+        return self.value.split("@")[0]

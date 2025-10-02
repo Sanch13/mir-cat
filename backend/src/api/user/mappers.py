@@ -1,9 +1,8 @@
-from src.api.user.schemas import UserResponseSchema, UserCreateSchema
-from src.domain.user.dtos import UserOutputDto, UserInputDto
+from src.api.user.schemas import UserCreateSchema, UserResponseSchema
+from src.domain.user.dtos import UserInputDto, UserOutputDto
 
 
 class UserApiMapper:
-
     @staticmethod
     def dto_to_schema(dto: UserOutputDto) -> UserResponseSchema:
         return UserResponseSchema(
@@ -12,8 +11,8 @@ class UserApiMapper:
             last_name=dto.last_name,
             is_superuser=dto.is_superuser,
             is_active=dto.is_active,
-            created_at= dto.created_at,
-            updated_at=dto.updated_at
+            created_at=dto.created_at,
+            updated_at=dto.updated_at,
         )
 
     @staticmethod

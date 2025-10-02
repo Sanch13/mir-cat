@@ -1,4 +1,3 @@
-import uuid
 from uuid import UUID
 
 from src.apps.user.irepo import IUserRepository
@@ -7,7 +6,6 @@ from src.domain.user.mappers import UserDomainMapper
 
 
 class UserCreateUseCase:
-
     def __init__(self, user_repo: IUserRepository):
         self.user_repo = user_repo
 

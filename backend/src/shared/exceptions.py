@@ -1,5 +1,6 @@
 from src.base_exceptions import TemplateAppError
 
+
 class EmptyValueError(TemplateAppError):
     """Empty value error."""
 
@@ -9,7 +10,10 @@ class EmptyValueError(TemplateAppError):
 class InvalidTypeError(TemplateAppError):
     """Invalid type error."""
 
-    MESSAGE_TEMPLATE = "Expected type '{expected_type}' for field '{attr_name}', but got '{actual_type}' with value: '{value}'"
+    MESSAGE_TEMPLATE = (
+        "Expected type '{expected_type}' for field '{attr_name}', "
+        "but got '{actual_type}' with value: '{value}'"
+    )
 
 
 class FieldNegativeError(TemplateAppError):
@@ -50,11 +54,10 @@ class FieldTooLongError(TemplateAppError):
         "Got {current_length} characters: {value}"
     )
 
+
 class InvalidFormatError(TemplateAppError):
     """Invalid format error."""
 
     MESSAGE_TEMPLATE = (
-        "Field '{attr_name}' has invalid format. "
-        "Expected format: {expected_format}. "
-        "Got: {value}"
+        "Field '{attr_name}' has invalid format. Expected format: {expected_format}. Got: {value}"
     )

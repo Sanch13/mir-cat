@@ -1,14 +1,13 @@
-from abc import ABC
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
 from src.shared.exceptions import (
-    InvalidTypeError,
+    FieldNegativeError,
     FieldTooLongError,
     FieldTooShortError,
-    FieldNegativeError,
-    FieldZeroError
+    FieldZeroError,
+    InvalidTypeError,
 )
 
 
@@ -26,6 +25,7 @@ class UuidVo:
     Raises:
         InvalidTypeError: If value is not a UUID instance
     """
+
     value: UUID
 
     def __post_init__(self):
@@ -36,12 +36,14 @@ class UuidVo:
         and not a string or other type that might represent a UUID.
         """
         if not isinstance(self.value, UUID):
-            raise InvalidTypeError(message_to_extend={
-                'expected_type': 'UUID',
-                'attr_name': 'value of UuidVo',
-                'actual_type': type(self.value).__name__,
-                'value': self.value
-            })
+            raise InvalidTypeError(
+                message_to_extend={
+                    "expected_type": "UUID",
+                    "attr_name": "value of UuidVo",
+                    "actual_type": type(self.value).__name__,
+                    "value": self.value,
+                }
+            )
 
 
 @dataclass(frozen=True)
@@ -58,6 +60,7 @@ class IntVo:
     Raises:
         InvalidTypeError: If value is not an integer
     """
+
     value: int
 
     def __post_init__(self):
@@ -68,26 +71,33 @@ class IntVo:
         and not a string or float that could be converted to integer.
         """
         if not isinstance(self.value, int):
-            raise InvalidTypeError(message_to_extend={
-                'expected_type': 'int',
-                'attr_name': 'value of IntVo',
-                'actual_type': type(self.value).__name__,
-                'value': self.value
-            })
+            raise InvalidTypeError(
+                message_to_extend={
+                    "expected_type": "int",
+                    "attr_name": "value of IntVo",
+                    "actual_type": type(self.value).__name__,
+                    "value": self.value,
+                }
+            )
+
 
 @dataclass(frozen=True)
 class PositiveIntVo(IntVo):
     def __post_init__(self):
         super().__post_init__()
         if self.value < 0:
-            raise FieldNegativeError(message_to_extend={
-                'attr_name': 'value of PositiveIntVo',
-                'value': self.value,
-            })
+            raise FieldNegativeError(
+                message_to_extend={
+                    "attr_name": "value of PositiveIntVo",
+                    "value": self.value,
+                }
+            )
         elif self.value == 0:
-            raise FieldZeroError(message_to_extend={
-                'attr_name': 'value of PositiveIntVo',
-            })
+            raise FieldZeroError(
+                message_to_extend={
+                    "attr_name": "value of PositiveIntVo",
+                }
+            )
 
 
 @dataclass(frozen=True)
@@ -104,6 +114,7 @@ class DatetimeVo:
     Raises:
         InvalidTypeError: If value is not a datetime instance
     """
+
     value: datetime
 
     def __post_init__(self):
@@ -114,12 +125,14 @@ class DatetimeVo:
         and not a string or other datetime representation.
         """
         if not isinstance(self.value, datetime):
-            raise InvalidTypeError(message_to_extend={
-                'expected_type': 'datetime',
-                'attr_name': 'value of DatetimeVo',
-                'actual_type': type(self.value).__name__,
-                'value': self.value
-            })
+            raise InvalidTypeError(
+                message_to_extend={
+                    "expected_type": "datetime",
+                    "attr_name": "value of DatetimeVo",
+                    "actual_type": type(self.value).__name__,
+                    "value": self.value,
+                }
+            )
 
 
 @dataclass(frozen=True)
@@ -136,6 +149,7 @@ class StrVo:
     Raises:
         InvalidTypeError: If value is not a string
     """
+
     value: str
 
     def __post_init__(self):
@@ -146,12 +160,15 @@ class StrVo:
         and not a number or other type that could be converted to string.
         """
         if not isinstance(self.value, str):
-            raise InvalidTypeError(message_to_extend={
-                'expected_type': 'str',
-                'attr_name': 'value of StrVo',
-                'actual_type': type(self.value).__name__,
-                'value': self.value
-            })
+            raise InvalidTypeError(
+                message_to_extend={
+                    "expected_type": "str",
+                    "attr_name": "value of StrVo",
+                    "actual_type": type(self.value).__name__,
+                    "value": self.value,
+                }
+            )
+
 
 @dataclass(frozen=True)
 class StrWithSizeVo(StrVo):
@@ -184,7 +201,7 @@ class StrWithSizeVo(StrVo):
             Uses getattr() to safely retrieve _MIN_SIZE from subclass.
             Returns None if _MIN_SIZE is not defined.
         """
-        return getattr(self, 'MIN_SIZE', None)
+        return getattr(self, "MIN_SIZE", None)
 
     @property
     def max_size(self) -> int:
@@ -198,7 +215,7 @@ class StrWithSizeVo(StrVo):
             Uses getattr() to safely retrieve _MAX_SIZE from subclass.
             Returns None if _MAX_SIZE is not defined.
         """
-        return getattr(self, 'MAX_SIZE', None)
+        return getattr(self, "MAX_SIZE", None)
 
     def __post_init__(self):
         """
@@ -222,18 +239,22 @@ class StrWithSizeVo(StrVo):
 
         # Validate minimum length if constraint is set
         if self.min_size is not None and length < self.min_size:
-            raise FieldTooShortError(message_to_extend={
-                'attr_name': self.__class__.__name__,
-                'min_length': self.min_size,
-                'current_length': length,
-                'value': self.value
-            })
+            raise FieldTooShortError(
+                message_to_extend={
+                    "attr_name": self.__class__.__name__,
+                    "min_length": self.min_size,
+                    "current_length": length,
+                    "value": self.value,
+                }
+            )
 
         # Validate maximum length if constraint is set
         elif self.max_size is not None and length > self.max_size:
-            raise FieldTooLongError(message_to_extend={
-                'attr_name': self.__class__.__name__,
-                'max_length': self.max_size,
-                'current_length': length,
-                'value': self.value
-            })
+            raise FieldTooLongError(
+                message_to_extend={
+                    "attr_name": self.__class__.__name__,
+                    "max_length": self.max_size,
+                    "current_length": length,
+                    "value": self.value,
+                }
+            )
