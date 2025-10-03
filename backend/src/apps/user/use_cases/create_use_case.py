@@ -12,5 +12,6 @@ class UserCreateUseCase:
     # TODO: добавить обработку ошибок
     async def execute(self, dto: UserInputDto) -> UUID:
         user = UserDomainMapper.input_dto_to_entity(dto)
+        print(f"user----------------------------{user}")
         await self.user_repo.save(user)
         return user.id.value
