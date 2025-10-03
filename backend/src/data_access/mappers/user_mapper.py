@@ -22,6 +22,8 @@ class UserModelMapper:
             last_name=entity.last_name.value if entity.last_name else None,
             is_superuser=entity.is_superuser,
             is_active=entity.is_active,
+            created_at=entity.created_at.value,
+            updated_at=entity.updated_at.value,
         )
 
     @staticmethod
