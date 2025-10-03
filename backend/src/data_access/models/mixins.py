@@ -19,5 +19,5 @@ class UUIDPkMixin:
 
 
 class DatetimeFieldsMixin:
-    created_at: Mapped[datetime] = mapped_column(TIMESTAMP, nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
