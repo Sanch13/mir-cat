@@ -1,14 +1,14 @@
 import uuid
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 from src.domain.user.value_objects import (
-    UserIdVo,
-    UserEmailVo,
-    UserPasswordVo,
     UserCreatedAtVo,
-    UserUpdatedAtVo,
+    UserEmailVo,
     UserFirstNameVo,
-    UserLastNameVo
+    UserIdVo,
+    UserLastNameVo,
+    UserPasswordVo,
+    UserUpdatedAtVo,
 )
 from src.shared.decriptor import ValidatedField
 from src.shared.exceptions import InvalidTypeError
@@ -25,16 +25,16 @@ class UserEntity:
     is_active = ValidatedField(expected_type=bool, nullable=True)
 
     def __init__(
-            self,
-            email: UserEmailVo,
-            password: UserPasswordVo,
-            created_at: UserCreatedAtVo | None = None,
-            updated_at: UserUpdatedAtVo | None = None,
-            first_name: UserFirstNameVo | None = None,
-            last_name: UserLastNameVo | None = None,
-            is_superuser: bool = False,
-            is_active: bool = True,
-            id_: UserIdVo | None = None,
+        self,
+        email: UserEmailVo,
+        password: UserPasswordVo,
+        created_at: UserCreatedAtVo | None = None,
+        updated_at: UserUpdatedAtVo | None = None,
+        first_name: UserFirstNameVo | None = None,
+        last_name: UserLastNameVo | None = None,
+        is_superuser: bool = False,
+        is_active: bool = True,
+        id_: UserIdVo | None = None,
     ) -> None:
         self.email = email
         self.password = password
@@ -54,14 +54,16 @@ class UserEntity:
     def id(self, value: UserIdVo) -> None:
         """Сеттер для ID"""
         if self._id is not None:
-            raise AttributeError('Item ID уже установлен.')
+            raise AttributeError("Item ID уже установлен.")
         if not isinstance(value, UserIdVo):
-            raise InvalidTypeError(message_to_extend={
-                'expected_type': UserIdVo,
-                'attr_name': 'value of UserIdVo',
-                'actual_type': type(value).__name__,
-                'value': value
-            })
+            raise InvalidTypeError(
+                message_to_extend={
+                    "expected_type": UserIdVo,
+                    "attr_name": "value of UserIdVo",
+                    "actual_type": type(value).__name__,
+                    "value": value,
+                }
+            )
         self._id = value
 
     # TODO: проверить необходимость

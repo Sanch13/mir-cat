@@ -1,8 +1,9 @@
-from typing import Any, Generic, Optional, TypeVar
+from typing import Any, Generic, TypeVar
 
-T = TypeVar('T')
+T = TypeVar("T")
 
-class ValidatedField(Generic[T]):
+
+class ValidatedField(Generic[T]):  # noqa: UP046
     """
     Дескриптор для валидации и хранения значений атрибутов объекта с проверками типа,
     значений на `None`, длины строки (если применимо) и других пользовательских ограничений.
@@ -34,9 +35,9 @@ class ValidatedField(Generic[T]):
         Устанавливает имя поля и генерирует имя для приватного атрибута.
         """
         self.field_name = name
-        self.private_name = f'_{name}'
+        self.private_name = f"_{name}"
 
-    def __get__(self, instance: Any, owner: Any) -> Optional[T]:
+    def __get__(self, instance: Any, owner: Any) -> T | None:
         if instance is None:
             return self  # type: ignore
 
@@ -45,7 +46,7 @@ class ValidatedField(Generic[T]):
 
         return getattr(instance, self.private_name, None)
 
-    def __set__(self, instance: Any, value: Optional[T]) -> None:
+    def __set__(self, instance: Any, value: T | None) -> None:
         if value is None and not self.nullable:
             raise ValueError(f"Поле '{self.field_name}' не может быть None.")
 

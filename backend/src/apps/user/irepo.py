@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from src.domain.user.dtos import UserOutputDto
 from src.domain.user.entity import UserEntity
 
 

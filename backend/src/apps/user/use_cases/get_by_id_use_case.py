@@ -6,7 +6,6 @@ from src.domain.user.mappers import UserDomainMapper
 
 
 class UserGetByIdUseCase:
-
     def __init__(self, user_repo: IUserRepository):
         self.user_repo = user_repo
 

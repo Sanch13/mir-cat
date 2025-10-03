@@ -46,6 +46,7 @@ class ConfigProvider(Provider):
     def provide_db_settings(self) -> DBSettings:
         return db_settings
 
+
 class RepositoryProvider(Provider):
     scope = Scope.REQUEST
 

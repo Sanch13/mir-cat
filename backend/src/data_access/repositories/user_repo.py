@@ -1,13 +1,10 @@
-import datetime
-from typing import List, Optional
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.apps.user.irepo import IUserRepository
 from src.data_access.mappers.user_mapper import UserModelMapper
-
 from src.data_access.models import UserModel
 from src.domain.user.entity import UserEntity
 
