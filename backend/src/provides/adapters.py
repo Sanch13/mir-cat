@@ -12,6 +12,8 @@ from sqlalchemy.ext.asyncio import (
 from src.apps.user.irepo import IUserRepository
 from src.config.db_settings import DBSettings, db_settings
 from src.data_access.repositories.user_repo import UserRepository
+from src.data_access.services.hasher import PasswordHasherImpl
+from src.domain.user.interfaces import IPasswordHasher
 
 
 class SqlalchemyProvider(Provider):
@@ -51,3 +53,9 @@ class RepositoryProvider(Provider):
     scope = Scope.REQUEST
 
     user_repository = provide(UserRepository, provides=IUserRepository)
+
+
+class PasswordHasherProvider(Provider):
+    @provide(scope=Scope.APP)
+    def provide_password_hasher(self) -> IPasswordHasher:
+        return PasswordHasherImpl()

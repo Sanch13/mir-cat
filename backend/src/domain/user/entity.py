@@ -2,12 +2,12 @@ import uuid
 from datetime import UTC, datetime
 
 from src.domain.user.value_objects import (
+    PasswordHashVo,
     UserCreatedAtVo,
     UserEmailVo,
     UserFirstNameVo,
     UserIdVo,
     UserLastNameVo,
-    UserPasswordVo,
     UserUpdatedAtVo,
 )
 from src.shared.decriptor import ValidatedField
@@ -16,18 +16,18 @@ from src.shared.exceptions import InvalidTypeError
 
 class UserEntity:
     email = ValidatedField(expected_type=UserEmailVo, nullable=False)
-    password = ValidatedField(expected_type=UserPasswordVo, nullable=False)
+    password = ValidatedField(expected_type=PasswordHashVo, nullable=False)
     created_at = ValidatedField(expected_type=UserCreatedAtVo, nullable=True)
     updated_at = ValidatedField(expected_type=UserUpdatedAtVo, nullable=True)
     first_name = ValidatedField(expected_type=UserFirstNameVo, nullable=True)
     last_name = ValidatedField(expected_type=UserLastNameVo, nullable=True)
-    is_superuser = ValidatedField(expected_type=bool, nullable=True)
+    is_superuser = ValidatedField(expected_type=bool, nullable=False)
     is_active = ValidatedField(expected_type=bool, nullable=True)
 
     def __init__(
         self,
         email: UserEmailVo,
-        password: UserPasswordVo,
+        password: PasswordHashVo,
         created_at: UserCreatedAtVo | None = None,
         updated_at: UserUpdatedAtVo | None = None,
         first_name: UserFirstNameVo | None = None,

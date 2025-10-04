@@ -3,40 +3,18 @@ import logging
 from contextlib import asynccontextmanager
 
 import uvicorn
-from dishka import AsyncContainer, make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
-from src.api.first import router as first_router
-from src.api.user.controllers import router as user_router
+from src.api import init_routes
 from src.apps.admin import init_sql_admin
 from src.config.server_settings import server_settings
-from src.provides.adapters import ConfigProvider, RepositoryProvider, SqlalchemyProvider
-from src.provides.usecases import UserUseCaseProvider
-
-
-def container_factory() -> AsyncContainer:
-    return make_async_container(
-        SqlalchemyProvider(),
-        ConfigProvider(),
-        RepositoryProvider(),
-        UserUseCaseProvider(),
-    )
+from src.provides import container_factory
 
 
 def init_di(app: FastAPI) -> None:
     container = container_factory()
     setup_dishka(container, app)
-
-
-def init_routes(app: FastAPI) -> None:
-    prefix: str = "/api/v1"
-    app.include_router(
-        router=first_router,
-        prefix=f"{prefix}",
-        tags=["First step"],
-    )
-    app.include_router(user_router)
 
 
 @asynccontextmanager
@@ -54,7 +32,6 @@ def create_app() -> FastAPI:
     )
     init_di(app)
     init_routes(app)  # Подключение роутеров
-
     init_sql_admin(app=app)
     return app
 
