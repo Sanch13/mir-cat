@@ -61,3 +61,33 @@ class InvalidFormatError(TemplateAppError):
     MESSAGE_TEMPLATE = (
         "Field '{attr_name}' has invalid format. Expected format: {expected_format}. Got: {value}"
     )
+
+
+class PasswordTooShortError(TemplateAppError):
+    """The password is too short"""
+
+    MESSAGE_TEMPLATE = (
+        "The password is too short!"
+        "The '{attr_name}' field must be at least {min_length} characters long."
+        "Current length is {current_length} characters: '{value}'"
+    )
+
+
+class PasswordTooLongError(TemplateAppError):
+    """The password is too long"""
+
+    MESSAGE_TEMPLATE = (
+        "The password is too long!"
+        "The '{attr_name}' field must be at least {min_length} characters long."
+        "Current length is {current_length} characters: '{value}'"
+    )
+
+
+class PasswordInvalidCharactersError(TemplateAppError):
+    """The password contains invalid characters"""
+
+    MESSAGE_TEMPLATE = (
+        "The password contains invalid characters! "
+        "The '{attr_name}' field must include only latin letters, digits and special symbols. "
+        "Provided value: '{value}'"
+    )

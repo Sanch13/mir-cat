@@ -1,12 +1,12 @@
 from src.data_access.models import UserModel
 from src.domain.user.entity import UserEntity
 from src.domain.user.value_objects import (
+    PasswordHashVo,
     UserCreatedAtVo,
     UserEmailVo,
     UserFirstNameVo,
     UserIdVo,
     UserLastNameVo,
-    UserPasswordVo,
     UserUpdatedAtVo,
 )
 
@@ -31,7 +31,7 @@ class UserModelMapper:
         return UserEntity(
             id_=UserIdVo(model.id),
             email=UserEmailVo(model.email),
-            password=UserPasswordVo(model.password),
+            password=PasswordHashVo.from_hash(model.password),
             first_name=UserFirstNameVo(model.first_name) if model.first_name else None,
             last_name=UserLastNameVo(model.first_name) if model.first_name else None,
             is_superuser=model.is_superuser,
