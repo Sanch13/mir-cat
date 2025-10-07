@@ -68,6 +68,14 @@ class UserEntity:
 
     # TODO: проверить необходимость
     def __repr__(self) -> str:
+        # TODO: для удобочитаемости, позже удалить
+        if self.id is not None:
+            attr = "\n\t".join([f"{k}: {v}" for k, v in self.__dict__.items()])
+            print(f"{self.__class__.__name__}(")
+            print("\t", end="")
+            print(attr)
+            print(")")
+
         if self.id is not None:
             return f"{self.__class__.__name__} (ID: {self.id.value}, email: {self.email.value}) "
         return f"{self.__class__.__name__} (no ID, email: {self.email.value})"
