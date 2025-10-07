@@ -28,25 +28,6 @@ class UserIdVo(UuidVo):
     pass
 
 
-# TODO: Установить дополнительные требования к паролю при валидации.
-@dataclass(frozen=True)
-class UserPasswordVo(StrWithSizeVo):
-    """
-    User password Value Object with security constraints.
-
-    Enforces minimum and maximum password length for security:
-    - Prevents too short passwords (vulnerable to brute force)
-    - Prevents excessively long passwords (storage/performance issues)
-
-    Constraints:
-        Minimum length: MIN_PASSWORD_LENGTH characters
-        Maximum length: MAX_PASSWORD_LENGTH characters
-    """
-
-    MIN_SIZE: ClassVar[int] = MIN_PASSWORD_LENGTH
-    MAX_SIZE: ClassVar[int] = MAX_PASSWORD_LENGTH
-
-
 @dataclass(frozen=True)
 class UserCreatedAtVo(DatetimeVo):
     """

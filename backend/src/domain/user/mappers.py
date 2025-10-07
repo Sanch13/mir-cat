@@ -20,6 +20,7 @@ class UserDomainMapper:
             is_active=dto.is_active,
         )
 
+    # TODO ошибки с None устранить
     @staticmethod
     def entity_to_output_dto(entity: UserEntity) -> UserOutputDto:
         return UserOutputDto(
