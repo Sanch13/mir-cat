@@ -11,7 +11,13 @@ from src.api.first import router as first_router
 from src.api.user.controllers import router as user_router
 from src.apps.admin import init_sql_admin
 from src.config.server_settings import server_settings
-from src.provides.adapters import ConfigProvider, RepositoryProvider, SqlalchemyProvider
+from src.provides.adapters import (
+    ConfigProvider,
+    RedisProvider,
+    RedisSettingsProvider,
+    RepositoryProvider,
+    SqlalchemyProvider,
+)
 from src.provides.usecases import UserUseCaseProvider
 
 
@@ -21,6 +27,8 @@ def container_factory() -> AsyncContainer:
         ConfigProvider(),
         RepositoryProvider(),
         UserUseCaseProvider(),
+        RedisSettingsProvider(),
+        RedisProvider(),
     )
 
 
@@ -41,7 +49,11 @@ def init_routes(app: FastAPI) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # if not broker.is_worker_process:
+    #     await broker.startup()
     yield
+    # if not broker.is_worker_process:
+    #     await broker.shutdown()
 
 
 def create_app() -> FastAPI:
