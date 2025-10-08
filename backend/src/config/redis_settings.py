@@ -1,15 +1,29 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class RedisSettings(BaseSettings):
-    REDIS_HOST: str
-    REDIS_PORT: int
-    REDIS_DB: int
-    REDIS_PASSWORD: str | None
+    host: str = "localhost"
+    port: int = 6379
+    db: int = 0
+    username: str = "default"
+    password: str | None = None
+
+    model_config = SettingsConfigDict(
+        env_prefix="redis_",
+        case_sensitive=False,
+        env_file="../../../.env",  # TODO: Вынести в отдельный env?
+        env_file_encoding="utf-8",
+        extra="ignore",  # Игнорировать лишние поля
+    )
 
     @property
     def redis_url(self) -> str:
-        """URL для подключения к Redis"""
-        if self.REDIS_PASSWORD:
-            return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
+        if self.username and self.password:
+            return f"redis://{self.username}:{self.password}@{self.host}:{self.port}/{self.db}"
+        elif self.password:
+            return f"redis://:{self.password}@{self.host}:{self.port}/{self.db}"
+        else:
+            return f"redis://{self.host}:{self.port}/{self.db}"
+
+
+redis_config = RedisSettings()

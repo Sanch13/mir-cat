@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from src.api import init_routes
 from src.apps.admin import init_sql_admin
 from src.config.server_settings import server_settings
+from src.core.bg_tasks.redis_broker import broker
 from src.provides import container_factory
 
 
@@ -19,7 +20,11 @@ def init_di(app: FastAPI) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if not broker.is_worker_process:
+        await broker.startup()
     yield
+    if not broker.is_worker_process:
+        await broker.shutdown()
 
 
 def create_app() -> FastAPI:

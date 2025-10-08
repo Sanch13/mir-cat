@@ -59,6 +59,60 @@ services:
     restart: unless-stopped
 #    command: redis-server --appendonly yes  # --appendonly yes если хотите сохранять данные Redis.
 
+  taskiq_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile-local
+    container_name: taskiq_worker
+    working_dir: /app
+    command: [
+      "uv",
+      "run",
+      "taskiq",
+      "worker",
+      "--fs-discover",
+      "src.core.bg_tasks.redis_broker:broker",
+      "--workers",
+      "3",
+      "--log-level",
+      "INFO"
+    ]
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - local
+    volumes:
+      - ./backend/src:/app/src
+
+  taskiq_scheduler:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile-local
+    container_name: taskiq_scheduler
+    working_dir: /app
+    command: [
+      "uv",
+      "run",
+      "taskiq",
+      "scheduler",
+      "src.core.bg_tasks.redis_broker:scheduler",
+      "--log-level",
+      "INFO"
+    ]
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      - redis
+    networks:
+      - local
+    volumes:
+      - ./backend/src:/app/src
+
 networks:
   local:
     driver: bridge
