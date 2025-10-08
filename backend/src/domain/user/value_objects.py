@@ -1,11 +1,18 @@
+import re
 from dataclasses import dataclass
 from typing import ClassVar
 
-from src.shared.exceptions import InvalidFormatError
+from src.domain.user.interfaces import IPasswordHasher
+from src.shared.exceptions import (
+    InvalidFormatError,
+    PasswordInvalidCharactersError,
+    PasswordTooLongError,
+    PasswordTooShortError,
+)
 from src.shared.value_objects import DatetimeVo, StrWithSizeVo, UuidVo
 
 MIN_PASSWORD_LENGTH = 5
-MAX_PASSWORD_LENGTH = 15
+MAX_PASSWORD_LENGTH = 70
 MIN_EMAIL_LENGTH = 5
 MAX_EMAIL_LENGTH = 254
 MAX_NAME_LENGTH = 30
@@ -19,25 +26,6 @@ class UserIdVo(UuidVo):
     """
 
     pass
-
-
-# TODO: Установить дополнительные требования к паролю при валидации.
-@dataclass(frozen=True)
-class UserPasswordVo(StrWithSizeVo):
-    """
-    User password Value Object with security constraints.
-
-    Enforces minimum and maximum password length for security:
-    - Prevents too short passwords (vulnerable to brute force)
-    - Prevents excessively long passwords (storage/performance issues)
-
-    Constraints:
-        Minimum length: MIN_PASSWORD_LENGTH characters
-        Maximum length: MAX_PASSWORD_LENGTH characters
-    """
-
-    MIN_SIZE: ClassVar[int] = MIN_PASSWORD_LENGTH
-    MAX_SIZE: ClassVar[int] = MAX_PASSWORD_LENGTH
 
 
 @dataclass(frozen=True)
@@ -236,3 +224,88 @@ class UserEmailVo(StrWithSizeVo):
             str: Local portion before @ symbol
         """
         return self.value.split("@")[0]
+
+
+PASSWORD_RULES_REGEX = {
+    "lowercase": re.compile(r"[a-z]"),
+    "uppercase": re.compile(r"[A-Z]"),
+    "digit": re.compile(r"\d"),
+    "special": re.compile(r"[!@#$%^&*(),.?\":{}|<>_\-+=]"),
+    "latin_only": re.compile(r"^[A-Za-z0-9!@#$%^&*(),.?\":{}|<>_\-+=]+$"),
+}
+
+
+@dataclass(frozen=True)
+class PasswordHashVo:
+    value: str
+
+    @classmethod
+    def from_hash(cls, hash_str: str) -> "PasswordHashVo":
+        """Создать VO из уже хешированного значения (при чтении из БД)."""
+        if not hash_str or not isinstance(hash_str, str):
+            raise ValueError("hash_str must be non-empty string")
+        return cls(value=hash_str)
+
+    @classmethod
+    def from_plain(cls, plain: str, hasher: IPasswordHasher) -> "PasswordHashVo":
+        """Создать VO из сырого пароля, хешируя его через порт hasher."""
+        cls._validate_plain(plain)
+        hashed = hasher.hash(plain)
+        return cls(value=hashed)
+
+    @property
+    def hash(self) -> str:
+        return self.value
+
+    def verify(self, plain: str, hasher: IPasswordHasher) -> bool:
+        """Проверить сырой пароль против хеша."""
+        return hasher.verify(plain, self.value)
+
+    # --- локальные правила валидации пароля (доменная логика) ---
+    @staticmethod
+    def _validate_plain(plain_password: str):
+        if not isinstance(plain_password, str):
+            raise ValueError("Password must be a string")
+
+        password = plain_password.strip()
+        length = len(password)
+
+        if MIN_PASSWORD_LENGTH is not None and length < MIN_PASSWORD_LENGTH:
+            raise PasswordTooShortError(
+                message_to_extend={
+                    "attr_name": "PasswordHashVo",
+                    "min_length": MIN_PASSWORD_LENGTH,
+                    "current_length": length,
+                    "value": "<hidden>",
+                }
+            )
+
+        if MAX_PASSWORD_LENGTH is not None and length > MAX_PASSWORD_LENGTH:
+            raise PasswordTooLongError(
+                message_to_extend={
+                    "attr_name": "PasswordHashVo",
+                    "max_length": MAX_PASSWORD_LENGTH,
+                    "current_length": length,
+                    "value": "<hidden>",
+                }
+            )
+
+        if not PASSWORD_RULES_REGEX["latin_only"].match(password):
+            raise PasswordInvalidCharactersError(
+                message_to_extend={
+                    "attr_name": "PasswordHashVo",
+                    "value": "<hidden>",
+                }
+            )
+        #  TODO: Обсудить какие критерии пароля такие и выставить правила
+        # if not PASSWORD_RULES_REGEX["lowercase"].search(password):
+        #     raise ValueError("Пароль должен содержать хотя бы одну строчную букву (a-z)")
+        #
+        # if not PASSWORD_RULES_REGEX["uppercase"].search(password):
+        #     raise ValueError("Пароль должен содержать хотя бы одну заглавную букву (A-Z)")
+        #
+        # if not PASSWORD_RULES_REGEX["digit"].search(password):
+        #     raise ValueError("Пароль должен содержать хотя бы одну цифру")
+        #
+        # if not PASSWORD_RULES_REGEX["special"].search(password):
+        #     raise ValueError("Пароль должен содержать хотя бы один спецсимвол (!@#$%^&* и т. д.)")

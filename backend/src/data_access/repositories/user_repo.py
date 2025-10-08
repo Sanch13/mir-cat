@@ -25,3 +25,9 @@ class UserRepository(IUserRepository):
         result = await self._session.execute(query)
         sql_user = result.scalar_one_or_none()
         return UserModelMapper.model_to_entity(sql_user) if sql_user else None
+
+    async def get_by_email(self, email: str) -> UserEntity | None:
+        query = select(self.model).where(self.model.email == email.lower())
+        result = await self._session.execute(query)
+        sql_user = result.scalar_one_or_none()
+        return UserModelMapper.model_to_entity(sql_user) if sql_user else None

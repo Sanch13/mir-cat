@@ -9,6 +9,8 @@ class UserInputDto:
     password: str
     first_name: str | None = None
     last_name: str | None = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
     is_superuser: bool = False
     is_active: bool = True
 
@@ -18,7 +20,6 @@ class UserInputDto:
 class UserOutputDto:
     id: UUID
     email: str
-    password: str
     created_at: datetime | None
     updated_at: datetime | None
     first_name: str | None = None
