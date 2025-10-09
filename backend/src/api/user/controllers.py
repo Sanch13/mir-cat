@@ -1,3 +1,4 @@
+import os
 from uuid import UUID
 
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
@@ -18,12 +19,15 @@ async def get_by_id(user_id: UUID, use_case: FromDishka[UserGetByIdUseCase]) -> 
     return UserApiMapper.dto_to_schema(dto_out)
 
 
-# TODO установить ResponseSchema
 @router.post("/", status_code=201, response_model=UserResponseSchema)
 async def create(
     user_data: UserCreateSchema,
     use_case: FromDishka[UserCreateUseCase],
 ) -> UserResponseSchema:
     dto_out = await use_case.execute(UserApiMapper.schema_to_dto(user_data))
-    await send_email_task.kiq(data=dto_out.email)
+    email_to = [os.getenv("SMTP_EMAIL_TO")]
+    await send_email_task.kiq(
+        data=f"Рег пользак с мылом: {dto_out.email}",
+        email_to=email_to,
+    )
     return UserApiMapper.dto_to_schema(dto_out)
