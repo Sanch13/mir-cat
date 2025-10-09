@@ -8,6 +8,15 @@ STORAGES_FILE = docker_compose/storages.yaml
 APP_CONTAINER = app
 SERVICE_NAME = fastapi_app
 
+
+.PHONY: add
+add:  #  make add v="taskiq-fastapi==0.3.5"
+	@cd backend && uv add "$(v)" && cd ..
+
+.PHONY: rm
+rm:  #  make rm v="taskiq-fastapi==0.3.5"
+	@cd backend && uv remove "$(v)"&& cd ..
+
 .PHONY: app-sync
 app-sync:  #
 	@cd backend && uv sync && cd ..
