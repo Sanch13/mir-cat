@@ -1,7 +1,7 @@
 # import os
 from email.message import EmailMessage
 
-from src.config.smtp_settings import smtp_config
+from src.config import smtp_config
 from src.core.bg_tasks.redis_broker import broker
 from src.core.bg_tasks.utils import connect_smtp_and_send_email
 
