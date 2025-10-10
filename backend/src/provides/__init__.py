@@ -4,6 +4,7 @@ from src.provides.adapters import (
     ConfigProvider,
     PasswordHasherProvider,
     RepositoryProvider,
+    SMTPConfigProvider,
     SqlalchemyProvider,
 )
 from src.provides.usecases import UserUseCaseProvider
@@ -15,5 +16,6 @@ def container_factory() -> AsyncContainer:
         ConfigProvider(),
         RepositoryProvider(),
         PasswordHasherProvider(),
+        SMTPConfigProvider(),
         UserUseCaseProvider(),
     )

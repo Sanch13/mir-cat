@@ -2,7 +2,7 @@ from email.message import EmailMessage
 
 import aiosmtplib
 
-from src.config.smtp_settings import SMTPSettings
+from src.config import SMTPSettings
 
 
 async def connect_smtp_and_send_email(smtp_config: SMTPSettings, message: EmailMessage) -> None:
