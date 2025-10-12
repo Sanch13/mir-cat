@@ -9,8 +9,11 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from src.apps.interfaces import IEmailNotificationService
+from src.apps.services.email_notification_service import EmailNotificationService
 from src.apps.user.irepo import IUserRepository
-from src.config.db_settings import DBSettings, db_settings
+from src.config import DBSettings, SMTPSettings
+from src.data_access.email.email_sender import EmailSender
 from src.data_access.repositories.user_repo import UserRepository
 from src.data_access.services.hasher import PasswordHasherImpl
 from src.domain.user.interfaces import IPasswordHasher
@@ -45,17 +48,45 @@ class SqlalchemyProvider(Provider):
 
 class ConfigProvider(Provider):
     @provide(scope=Scope.APP)
-    def provide_db_settings(self) -> DBSettings:
-        return db_settings
+    def db_settings(self) -> DBSettings:
+        return DBSettings()
+
+
+class EmailProvider(Provider):
+    """Провайдер для email инфраструктуры"""
+
+    @provide(scope=Scope.APP)
+    def provide_smtp_settings(self) -> SMTPSettings:
+        """Настройки SMTP - синглтон"""
+        return SMTPSettings()
+
+    @provide(scope=Scope.APP)
+    def provide_email_sender(self, settings: SMTPSettings) -> EmailSender:
+        """EmailSender - синглтон (stateless)"""
+        return EmailSender(settings)
+
+    # @provide(scope=Scope.APP)
+    # def provide_email_message_builder(self, settings: SMTPSettings) -> EmailMessageBuilder:
+    #     """EmailMessageBuilder - синглтон (stateless)"""
+    #     return EmailMessageBuilder(settings)
+    #
+    # @provide(scope=Scope.APP)
+    # def provide_email_content_builder(self) -> EmailContentBuilder:
+    #     """EmailContentBuilder - синглтон (stateless)"""
+    #     return EmailContentBuilder()
+
+
+class EmailNotificationServiceProvider(Provider):
+    """Провайдер для Application сервисов в FastAPI"""
+
+    @provide(scope=Scope.APP)
+    def provide_email_notification_service(self) -> IEmailNotificationService:
+        return EmailNotificationService()
 
 
 class RepositoryProvider(Provider):
-    scope = Scope.REQUEST
-
-    user_repository = provide(UserRepository, provides=IUserRepository)
+    user_repository = provide(source=UserRepository, scope=Scope.REQUEST, provides=IUserRepository)
 
 
 class PasswordHasherProvider(Provider):
-    @provide(scope=Scope.APP)
-    def provide_password_hasher(self) -> IPasswordHasher:
-        return PasswordHasherImpl()
+    hasher = provide(source=PasswordHasherImpl, scope=Scope.APP, provides=IPasswordHasher)
