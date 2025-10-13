@@ -70,8 +70,9 @@ services:
       "run",
       "taskiq",
       "worker",
-      "--fs-discover",
       "src.config.broker:broker",
+      "src.data_access.taskiq.tasks.schedule_tasks",
+      "--fs-discover",
       "--workers",
       "3",
       "--log-level",
@@ -99,8 +100,8 @@ services:
       "run",
       "taskiq",
       "scheduler",
-      "--fs-discover",
       "src.config.broker:scheduler",
+      "src.data_access.taskiq.tasks.schedule_tasks",
       "--log-level",
       "INFO"
     ]

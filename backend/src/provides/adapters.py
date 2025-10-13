@@ -65,6 +65,7 @@ class EmailProvider(Provider):
         """EmailSender - синглтон (stateless)"""
         return EmailSender(settings)
 
+    # TODO: Подумать! Реализовать отдельный сервис по созданию message ?
     # @provide(scope=Scope.APP)
     # def provide_email_message_builder(self, settings: SMTPSettings) -> EmailMessageBuilder:
     #     """EmailMessageBuilder - синглтон (stateless)"""
