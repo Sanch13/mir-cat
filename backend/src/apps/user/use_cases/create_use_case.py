@@ -36,8 +36,6 @@ class UserCreateUseCase:
         await self.email_notification_service.send_email(
             to_email="a.zubchyk@miran-bel.com",
             data=data,
-            # subject="subject",
-            # html_content=html_content,
         )
 
         return UserDomainMapper.entity_to_output_dto(user_entity)
