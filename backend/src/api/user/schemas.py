@@ -11,8 +11,8 @@ class UserCreateSchema(BaseModel):
 
 
 class UserResponseSchema(BaseModel):
-    first_name: str
-    last_name: str
+    first_name: str | None
+    last_name: str | None
     email: str
     created_at: datetime
     updated_at: datetime

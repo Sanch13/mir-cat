@@ -28,8 +28,8 @@ class UserDomainMapper:
             email=entity.email.value,
             created_at=entity.created_at.value,
             updated_at=entity.updated_at.value,
-            first_name=entity.first_name.value,
-            last_name=entity.last_name.value,
+            first_name=entity.first_name.value if entity.first_name else None,
+            last_name=entity.last_name.value if entity.last_name else None,
             is_superuser=entity.is_superuser,
             is_active=entity.is_active,
         )
