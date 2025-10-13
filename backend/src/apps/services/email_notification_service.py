@@ -2,7 +2,7 @@ from src.apps.interfaces import IEmailNotificationService
 from src.data_access.taskiq.tasks.email_tasks import send_email_task
 
 
-class EmailNotificationService(IEmailNotificationService):
+class EmailNotificationServiceImpl(IEmailNotificationService):
     """
     Application Service для управления email уведомлениями
     Координирует отправку через TaskIQ

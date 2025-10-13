@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from src.apps.interfaces import IEmailNotificationService
-from src.apps.services.email_notification_service import EmailNotificationService
+from src.apps.services import EmailNotificationServiceImpl
 from src.apps.user.irepo import IUserRepository
 from src.config import DBSettings, SMTPSettings
 from src.data_access.email.email_sender import EmailSender
@@ -82,7 +82,7 @@ class EmailNotificationServiceProvider(Provider):
 
     @provide(scope=Scope.APP)
     def provide_email_notification_service(self) -> IEmailNotificationService:
-        return EmailNotificationService()
+        return EmailNotificationServiceImpl()
 
 
 class RepositoryProvider(Provider):

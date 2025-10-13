@@ -1,3 +1,10 @@
+# from email.message import EmailMessage
+#
+# from dishka.integrations.taskiq import FromDishka, inject
+#
+# from src.config import broker
+# from src.data_access.email import EmailSender
+
 # Оставлен как пример периодик задачи
 # @broker.task(schedule=[{"cron": "*/1 * * * *"}])  # Каждые 1 минут
 # @inject(patch_module=True)
