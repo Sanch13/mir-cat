@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from src.apps.user.irepo import IUserRepository
+from src.apps.user.services.auth_user_service import AuthenticateUserService
 from src.config.db_settings import DBSettings, db_settings
 from src.data_access.repositories.user_repo import UserRepository
 from src.data_access.services.hasher import PasswordHasherImpl
@@ -59,3 +60,11 @@ class PasswordHasherProvider(Provider):
     @provide(scope=Scope.APP)
     def provide_password_hasher(self) -> IPasswordHasher:
         return PasswordHasherImpl()
+
+
+class AuthenticateUserServiceProvider(Provider):
+    @provide(scope=Scope.REQUEST)
+    def provide_auth_user_service(
+        self, user_repo: IUserRepository, hasher: IPasswordHasher
+    ) -> AuthenticateUserService:
+        return AuthenticateUserService(user_repo, hasher)

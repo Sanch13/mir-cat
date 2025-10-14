@@ -1,5 +1,5 @@
-from src.api.user.schemas import UserCreateSchema, UserResponseSchema
-from src.domain.user.dtos import UserInputDto, UserOutputDto
+from src.api.user.schemas import UserAuthSchema, UserCreateSchema, UserResponseSchema
+from src.domain.user.dtos import UserAuthInputDto, UserInputDto, UserOutputDto
 
 
 class UserApiMapper:
@@ -18,3 +18,7 @@ class UserApiMapper:
     @staticmethod
     def schema_to_dto(schema: UserCreateSchema) -> UserInputDto:
         return UserInputDto(**schema.__dict__)
+
+    @staticmethod
+    def user_auth_schema_to_dto(schema: UserAuthSchema) -> UserAuthInputDto:
+        return UserAuthInputDto(**schema.__dict__)

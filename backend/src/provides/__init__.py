@@ -1,6 +1,7 @@
 from dishka import AsyncContainer, make_async_container
 
 from src.provides.adapters import (
+    AuthenticateUserServiceProvider,
     ConfigProvider,
     PasswordHasherProvider,
     RepositoryProvider,
@@ -16,4 +17,5 @@ def container_factory() -> AsyncContainer:
         RepositoryProvider(),
         PasswordHasherProvider(),
         UserUseCaseProvider(),
+        AuthenticateUserServiceProvider(),
     )
