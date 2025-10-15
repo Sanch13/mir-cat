@@ -7,6 +7,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
 from src.api import init_routes
+from src.api.exception_handlers import init_exception_handlers
 from src.apps.admin import init_sql_admin
 from src.config.server_settings import server_settings
 from src.core.bg_tasks.redis_broker import broker
@@ -36,6 +37,7 @@ def create_app() -> FastAPI:
         version="1.0.0",
     )
     init_di(app)
+    init_exception_handlers(app)
     init_routes(app)  # Подключение роутеров
     init_sql_admin(app=app)
     return app
