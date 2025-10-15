@@ -32,15 +32,28 @@ class SqlalchemyProvider(Provider):
         async with sessionmaker() as session:
             try:
                 yield session
+                # Проверяем, активна ли транзакция, перед коммитом
+                if session.in_transaction():
+                    await session.commit()
+                else:
+                    pass  # добавить логирование
                 await session.commit()
             except SQLAlchemyError:
-                await session.rollback()
-                raise
+                try:
+                    await session.rollback()
+                except Exception:
+                    pass  # добавить логирование
             except Exception:
-                await session.rollback()
+                try:
+                    await session.rollback()
+                except Exception:
+                    pass  # добавить логирование
                 raise
             finally:
-                await session.close()
+                try:
+                    await session.close()
+                except Exception:
+                    pass  # добавить логирование
 
 
 class ConfigProvider(Provider):

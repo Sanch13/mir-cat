@@ -3,13 +3,13 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 from src.domain.user.interfaces import IPasswordHasher
-from src.shared.exceptions import (
+from src.shared.domain.exceptions import (
     InvalidFormatError,
     PasswordInvalidCharactersError,
     PasswordTooLongError,
     PasswordTooShortError,
 )
-from src.shared.value_objects import DatetimeVo, StrWithSizeVo, UuidVo
+from src.shared.domain.value_objects import DatetimeVo, StrWithSizeVo, UuidVo
 
 MIN_PASSWORD_LENGTH = 5
 MAX_PASSWORD_LENGTH = 70

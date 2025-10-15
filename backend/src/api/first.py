@@ -3,6 +3,8 @@ from fastapi import APIRouter
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.apps.base_apps_exception import DatabaseError, DatabaseTimedOutError
+
 router = APIRouter(route_class=DishkaRoute)
 
 
@@ -31,3 +33,25 @@ async def database_info(session: FromDishka[AsyncSession]) -> dict:
         "tables": tables,
         "message": "Database connection is working!",
     }
+
+
+# @router.get("/domain-err")
+# async def domain_err(session: FromDishka[AsyncSession]) -> str:
+#     raise
+#
+
+#
+#
+# @router.get("/apps-err")
+# async def apps_err(session: FromDishka[AsyncSession]) -> str:
+#     raise UserNotFoundError.by_email('give@mail.ru')
+
+
+@router.get("/db-time-out-err")
+async def data_base_time_out_err(session: FromDishka[AsyncSession]) -> str:
+    raise DatabaseTimedOutError
+
+
+@router.get("/data-access-err")
+async def data_base_err(session: FromDishka[AsyncSession]) -> str:
+    raise DatabaseError

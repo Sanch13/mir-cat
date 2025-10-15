@@ -10,8 +10,8 @@ from src.domain.user.value_objects import (
     UserLastNameVo,
     UserUpdatedAtVo,
 )
-from src.shared.decriptor import ValidatedField
-from src.shared.exceptions import InvalidTypeError
+from src.shared.domain.decriptor import ValidatedField
+from src.shared.domain.exceptions import InvalidTypeError
 
 
 class UserEntity:

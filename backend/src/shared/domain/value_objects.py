@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
-from src.shared.exceptions import (
+from src.shared.domain.exceptions import (
     FieldNegativeError,
     FieldTooLongError,
     FieldTooShortError,
