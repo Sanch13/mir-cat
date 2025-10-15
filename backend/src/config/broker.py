@@ -3,7 +3,7 @@ from taskiq import TaskiqScheduler
 from taskiq.schedule_sources import LabelScheduleSource
 from taskiq_redis import RedisAsyncResultBackend, RedisStreamBroker
 
-from src.config import all_settings as settings
+from src.config.settings import settings
 
 result_backend = RedisAsyncResultBackend(
     redis_url=settings.redis.redis_url,
