@@ -1,9 +1,8 @@
 from collections.abc import AsyncGenerator, AsyncIterable
-from contextlib import asynccontextmanager
 
-import redis.asyncio as redis
 from dishka import Provider, Scope, provide
-from redis.asyncio import Redis
+from redis.asyncio import ConnectionPool
+from redis.asyncio import Redis as AsyncRedis
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -56,13 +55,12 @@ class SqlalchemyProvider(Provider):
 
 class RedisProvider(Provider):
     @provide(scope=Scope.APP)
-    def get_redis_pool(self, settings: Settings) -> redis.ConnectionPool:
-        return redis.ConnectionPool.from_url(settings.redis.redis_url)
+    def get_redis_pool(self, settings: Settings) -> ConnectionPool:
+        return ConnectionPool.from_url(settings.redis.redis_url, decode_responses=True)
 
-    @provide(scope=Scope.REQUEST)
-    @asynccontextmanager
-    async def get_redis_client(self, pool: redis.ConnectionPool) -> AsyncGenerator[Redis]:
-        client = redis.Redis(connection_pool=pool)
+    @provide(scope=Scope.REQUEST, provides=AsyncRedis)
+    async def get_redis_client(self, pool: ConnectionPool) -> AsyncGenerator[AsyncRedis]:
+        client = AsyncRedis(connection_pool=pool)
         try:
             yield client
         finally:
