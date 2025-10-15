@@ -11,10 +11,13 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from src.apps.interfaces import IEmailNotificationService
+from src.apps.services import EmailNotificationServiceImpl
 from src.apps.user.irepo import IUserRepository
 from src.apps.user.services.auth_user_service import AuthenticateUserService
 from src.config import all_settings
 from src.config.settings import Settings
+from src.data_access.email.email_sender import EmailSender
 from src.data_access.repositories.user_repo import UserRepository
 from src.data_access.services.hasher import PasswordHasherImpl
 from src.domain.user.interfaces import IPasswordHasher
@@ -67,16 +70,40 @@ class RedisProvider(Provider):
             await client.aclose()
 
 
-class RepositoryProvider(Provider):
-    scope = Scope.REQUEST
+class EmailProvider(Provider):
+    """Провайдер для email инфраструктуры"""
 
-    user_repository = provide(UserRepository, provides=IUserRepository)
+    @provide(scope=Scope.APP)
+    def provide_email_sender(self, settings: Settings) -> EmailSender:
+        """EmailSender - синглтон (stateless)"""
+        return EmailSender(settings)
+
+    # TODO: Подумать! Реализовать отдельный сервис по созданию message ?
+    # @provide(scope=Scope.APP)
+    # def provide_email_message_builder(self, settings: SMTPSettings) -> EmailMessageBuilder:
+    #     """EmailMessageBuilder - синглтон (stateless)"""
+    #     return EmailMessageBuilder(settings)
+    #
+    # @provide(scope=Scope.APP)
+    # def provide_email_content_builder(self) -> EmailContentBuilder:
+    #     """EmailContentBuilder - синглтон (stateless)"""
+    #     return EmailContentBuilder()
+
+
+class EmailNotificationServiceProvider(Provider):
+    """Провайдер для Application сервисов в FastAPI"""
+
+    @provide(scope=Scope.APP)
+    def provide_email_notification_service(self) -> IEmailNotificationService:
+        return EmailNotificationServiceImpl()
+
+
+class RepositoryProvider(Provider):
+    user_repository = provide(source=UserRepository, scope=Scope.REQUEST, provides=IUserRepository)
 
 
 class PasswordHasherProvider(Provider):
-    @provide(scope=Scope.APP)
-    def provide_password_hasher(self) -> IPasswordHasher:
-        return PasswordHasherImpl()
+    hasher = provide(source=PasswordHasherImpl, scope=Scope.APP, provides=IPasswordHasher)
 
 
 class AuthenticateUserServiceProvider(Provider):

@@ -3,19 +3,21 @@ import logging
 from contextlib import asynccontextmanager
 
 import uvicorn
-from dishka.integrations.fastapi import setup_dishka
+from dishka.integrations.fastapi import setup_dishka as setup_dishka_fastapi
+from dishka.integrations.taskiq import setup_dishka as setup_dishka_taskiq
 from fastapi import FastAPI
 
 from src.api import init_routes
 from src.apps.admin import init_sql_admin
 from src.config import all_settings as settings
-from src.core.bg_tasks.redis_broker import broker
+from src.config import broker
 from src.provides import container_factory
 
 
 def init_di(app: FastAPI) -> None:
     container = container_factory()
-    setup_dishka(container, app)
+    setup_dishka_fastapi(container=container, app=app)
+    setup_dishka_taskiq(container=container, broker=broker)
 
 
 @asynccontextmanager

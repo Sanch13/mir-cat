@@ -2,6 +2,8 @@ from dishka import AsyncContainer, make_async_container
 
 from src.provides.adapters import (
     AuthenticateUserServiceProvider,
+    EmailNotificationServiceProvider,
+    EmailProvider,
     PasswordHasherProvider,
     RedisProvider,
     RepositoryProvider,
@@ -16,8 +18,10 @@ def container_factory() -> AsyncContainer:
         SqlalchemyProvider(),
         SettingsProvider(),
         RepositoryProvider(),
-        PasswordHasherProvider(),
-        UserUseCaseProvider(),
-        AuthenticateUserServiceProvider(),
         RedisProvider(),
+        PasswordHasherProvider(),
+        AuthenticateUserServiceProvider(),
+        UserUseCaseProvider(),
+        EmailProvider(),
+        EmailNotificationServiceProvider(),
     )
