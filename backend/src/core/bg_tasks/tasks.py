@@ -1,7 +1,7 @@
 # import os
 from email.message import EmailMessage
 
-from src.config.smtp_settings import smtp_config
+from src.config import all_settings as settings
 from src.core.bg_tasks.redis_broker import broker
 from src.core.bg_tasks.utils import connect_smtp_and_send_email
 
@@ -19,7 +19,7 @@ from src.core.bg_tasks.utils import connect_smtp_and_send_email
 async def send_email_task(data: str, email_to: list[str]) -> None:
     message = EmailMessage()
     message["Subject"] = "subject"
-    message["From"] = smtp_config.user
+    message["From"] = settings.smtp.user
     message["To"] = email_to
 
     message.set_content(data)
@@ -36,7 +36,7 @@ async def send_email_task(data: str, email_to: list[str]) -> None:
     #                        filename=("utf-8", "", f"{filename}"))
 
     try:
-        await connect_smtp_and_send_email(smtp_config, message)
+        await connect_smtp_and_send_email(settings, message)
     except Exception as e:
         print(e)
 

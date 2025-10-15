@@ -5,8 +5,7 @@ from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter
 
 from src.api.user.mappers import UserApiMapper
-from src.api.user.schemas import UserAuthSchema, UserCreateSchema, UserResponseSchema
-from src.apps.user.use_cases.auth_use_case import AuthUserUseCase
+from src.api.user.schemas import UserCreateSchema, UserResponseSchema
 from src.apps.user.use_cases.create_use_case import UserCreateUseCase
 from src.apps.user.use_cases.get_by_id_use_case import UserGetByIdUseCase
 from src.core.bg_tasks.tasks import send_email_task
@@ -32,11 +31,3 @@ async def create(
         email_to=email_to,
     )
     return UserApiMapper.dto_to_schema(dto_out)
-
-
-@router.post("/login", status_code=200)
-async def login_user(
-    auth_dto: UserAuthSchema,
-    use_case: FromDishka[AuthUserUseCase],
-) -> dict[str, str]:
-    return await use_case.execute(dto=UserApiMapper.user_auth_schema_to_dto(auth_dto))

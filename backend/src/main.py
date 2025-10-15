@@ -8,7 +8,7 @@ from fastapi import FastAPI
 
 from src.api import init_routes
 from src.apps.admin import init_sql_admin
-from src.config.server_settings import server_settings
+from src.config import all_settings as settings
 from src.core.bg_tasks.redis_broker import broker
 from src.provides import container_factory
 
@@ -45,15 +45,15 @@ async def start_server(app: FastAPI) -> None:
     """Асинхронный запуск сервера"""
     config = uvicorn.Config(
         app=app,
-        host=server_settings.HOST,
-        port=server_settings.PORT,
-        reload=server_settings.RELOAD,
-        use_colors=server_settings.USE_COLORS,
-        log_level=server_settings.LOG_LEVEL,
+        host=settings.server.HOST,
+        port=settings.server.PORT,
+        reload=settings.server.RELOAD,
+        use_colors=settings.server.USE_COLORS,
+        log_level=settings.server.LOG_LEVEL,
     )
 
     server = uvicorn.Server(config=config)
-    logging.info(f"Starting server on {server_settings.HOST}:{server_settings.PORT}")
+    logging.info(f"Starting server on {settings.server.HOST}:{settings.server.PORT}")
 
     await server.serve()
 
@@ -63,7 +63,7 @@ def main() -> None:
 
     # Настройка логирования
     logging.basicConfig(
-        level=getattr(logging, server_settings.LOG_LEVEL.upper()),
+        level=getattr(logging, settings.server.LOG_LEVEL.upper()),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 

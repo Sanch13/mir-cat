@@ -1,6 +1,9 @@
-from collections.abc import AsyncIterable
+from collections.abc import AsyncGenerator, AsyncIterable
+from contextlib import asynccontextmanager
 
+import redis.asyncio as redis
 from dishka import Provider, Scope, provide
+from redis.asyncio import Redis
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -11,16 +14,23 @@ from sqlalchemy.ext.asyncio import (
 
 from src.apps.user.irepo import IUserRepository
 from src.apps.user.services.auth_user_service import AuthenticateUserService
-from src.config.db_settings import DBSettings, db_settings
+from src.config import all_settings
+from src.config.settings import Settings
 from src.data_access.repositories.user_repo import UserRepository
 from src.data_access.services.hasher import PasswordHasherImpl
 from src.domain.user.interfaces import IPasswordHasher
 
 
+class SettingsProvider(Provider):
+    @provide(scope=Scope.APP)
+    def provide_all_settings(self) -> Settings:
+        return all_settings
+
+
 class SqlalchemyProvider(Provider):
     @provide(scope=Scope.APP)
-    def provide_async_engine(self, db_config: DBSettings) -> AsyncEngine:
-        return create_async_engine(db_config.construct_sqlalchemy_url)
+    def provide_async_engine(self, settings: Settings) -> AsyncEngine:
+        return create_async_engine(settings.db.construct_sqlalchemy_url)
 
     @provide(scope=Scope.APP)
     def provide_async_sessionmaker(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
@@ -44,10 +54,19 @@ class SqlalchemyProvider(Provider):
                 await session.close()
 
 
-class ConfigProvider(Provider):
+class RedisProvider(Provider):
     @provide(scope=Scope.APP)
-    def provide_db_settings(self) -> DBSettings:
-        return db_settings
+    def get_redis_pool(self, settings: Settings) -> redis.ConnectionPool:
+        return redis.ConnectionPool.from_url(settings.redis.redis_url)
+
+    @provide(scope=Scope.REQUEST)
+    @asynccontextmanager
+    async def get_redis_client(self, pool: redis.ConnectionPool) -> AsyncGenerator[Redis]:
+        client = redis.Redis(connection_pool=pool)
+        try:
+            yield client
+        finally:
+            await client.aclose()
 
 
 class RepositoryProvider(Provider):

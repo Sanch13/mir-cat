@@ -24,6 +24,3 @@ class RedisSettings(BaseSettings):
             return f"redis://:{self.password}@{self.host}:{self.port}/{self.db}"
         else:
             return f"redis://{self.host}:{self.port}/{self.db}"
-
-
-redis_config = RedisSettings()
