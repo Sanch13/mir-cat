@@ -8,6 +8,7 @@ dependencies = [
     "aiosmtplib==4.0.2",
     "alembic==1.16.5",
     "asyncpg==0.30.0",
+    "cryptography==46.0.3",
     "dishka==1.7.1",
     "fastapi==0.116.1",
     "psycopg2-binary==2.9.10",

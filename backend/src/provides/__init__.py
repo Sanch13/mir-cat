@@ -4,6 +4,7 @@ from src.provides.adapters import (
     AuthenticateUserServiceProvider,
     EmailNotificationServiceProvider,
     EmailProvider,
+    JWTServiceProvider,
     PasswordHasherProvider,
     RedisProvider,
     RepositoryProvider,
@@ -24,4 +25,5 @@ def container_factory() -> AsyncContainer:
         UserUseCaseProvider(),
         EmailProvider(),
         EmailNotificationServiceProvider(),
+        JWTServiceProvider(),
     )

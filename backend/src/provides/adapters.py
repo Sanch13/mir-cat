@@ -15,6 +15,7 @@ from src.apps.interfaces import IEmailNotificationService
 from src.apps.services import EmailNotificationServiceImpl
 from src.apps.user.irepo import IUserRepository
 from src.apps.user.services.auth_user_service import AuthenticateUserService
+from src.apps.user.services.jwt_service import JWTService
 from src.config import all_settings
 from src.config.settings import Settings
 from src.data_access.email.email_sender import EmailSender
@@ -112,3 +113,9 @@ class AuthenticateUserServiceProvider(Provider):
         self, user_repo: IUserRepository, hasher: IPasswordHasher
     ) -> AuthenticateUserService:
         return AuthenticateUserService(user_repo, hasher)
+
+
+class JWTServiceProvider(Provider):
+    @provide(scope=Scope.REQUEST)
+    def provide_jwt_service(self, settings: Settings, redis_client: AsyncRedis) -> JWTService:
+        return JWTService(settings, redis_client)
