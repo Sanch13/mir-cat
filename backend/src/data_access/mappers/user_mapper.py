@@ -33,7 +33,7 @@ class UserModelMapper:
             email=UserEmailVo(model.email),
             password=PasswordHashVo.from_hash(model.password),
             first_name=UserFirstNameVo(model.first_name) if model.first_name else None,
-            last_name=UserLastNameVo(model.first_name) if model.first_name else None,
+            last_name=UserLastNameVo(model.last_name) if model.first_name else None,
             is_superuser=model.is_superuser,
             is_active=model.is_active,
             created_at=UserCreatedAtVo(model.created_at),
