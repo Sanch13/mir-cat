@@ -1,9 +1,15 @@
 from dishka import AsyncContainer, make_async_container
 
 from src.provides.adapters import (
-    ConfigProvider,
+    AuthenticateUserServiceProvider,
+    EmailNotificationServiceProvider,
+    EmailProvider,
+    GetCurrentUserProvider,
+    JWTServiceProvider,
     PasswordHasherProvider,
+    RedisProvider,
     RepositoryProvider,
+    SettingsProvider,
     SqlalchemyProvider,
 )
 from src.provides.usecases import UserUseCaseProvider
@@ -12,8 +18,14 @@ from src.provides.usecases import UserUseCaseProvider
 def container_factory() -> AsyncContainer:
     return make_async_container(
         SqlalchemyProvider(),
-        ConfigProvider(),
+        SettingsProvider(),
         RepositoryProvider(),
+        RedisProvider(),
         PasswordHasherProvider(),
+        AuthenticateUserServiceProvider(),
         UserUseCaseProvider(),
+        EmailProvider(),
+        EmailNotificationServiceProvider(),
+        JWTServiceProvider(),
+        GetCurrentUserProvider(),
     )

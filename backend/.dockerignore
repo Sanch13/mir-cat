@@ -25,6 +25,9 @@ media/
 # Static
 static/
 
+# Private keys and certificates
+*.pem
+
 # Git
 .git
 .gitignore

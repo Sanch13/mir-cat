@@ -20,5 +20,10 @@ class UserResponseSchema(BaseModel):
     is_active: bool
 
 
+class UserAuthSchema(BaseModel):
+    email: str
+    password: str
+
+
 class UserUpdateSchema(BaseModel):
     pass

@@ -63,6 +63,3 @@ class DBSettings(BaseSettings):
         "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
         "pk": "pk_%(table_name)s",
     }
-
-
-db_settings = DBSettings()

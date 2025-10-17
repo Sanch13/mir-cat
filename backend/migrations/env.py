@@ -3,7 +3,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from src.config import db_settings
+from src.config import all_settings as settings
 from src.data_access.models import Base
 
 # this is the Alembic Config object, which provides
@@ -25,7 +25,7 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-config.set_main_option("sqlalchemy.url", db_settings.construct_sync_sqlalchemy_url)
+config.set_main_option("sqlalchemy.url", settings.db.construct_sync_sqlalchemy_url)
 
 
 def run_migrations_offline() -> None:

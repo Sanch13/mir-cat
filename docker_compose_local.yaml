@@ -70,8 +70,9 @@ services:
       "run",
       "taskiq",
       "worker",
+      "src.config.broker:broker",
+      "src.data_access.taskiq.tasks.schedule_tasks",
       "--fs-discover",
-      "src.core.bg_tasks.redis_broker:broker",
       "--workers",
       "3",
       "--log-level",
@@ -99,8 +100,8 @@ services:
       "run",
       "taskiq",
       "scheduler",
-      "--fs-discover",
-      "src.core.bg_tasks.redis_broker:scheduler",
+      "src.config.broker:scheduler",
+      "src.data_access.taskiq.tasks.schedule_tasks",
       "--log-level",
       "INFO"
     ]
