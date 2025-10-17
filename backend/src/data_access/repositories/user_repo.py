@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,7 +18,7 @@ class UserRepository(IUserRepository):
         self._session.add(user_model)
 
     # TODO: добавить обработку ошибок
-    async def get_by_id(self, user_id: UUID) -> UserEntity | None:
+    async def get_by_id(self, user_id: str) -> UserEntity | None:
         query = select(self.model).where(self.model.id == user_id)
         result = await self._session.execute(query)
         sql_user = result.scalar_one_or_none()

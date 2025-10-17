@@ -49,3 +49,16 @@ class JWTService:
         algorithm = self.settings.ALGORITHM
         refresh_token = jwt.encode(payload=payload, key=secret_key, algorithm=algorithm)
         return refresh_token
+
+    async def verify_access_token(self, token: str) -> dict | None:
+        """Проверка access token"""
+        try:
+            payload = jwt.decode(
+                jwt=token,
+                key=self.settings.public_key,
+                algorithms=self.settings.ALGORITHM,
+            )
+            return payload
+        # TODO: Сделать отдельную ошибку
+        except Exception:
+            return None

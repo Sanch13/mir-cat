@@ -15,6 +15,7 @@ from src.apps.interfaces import IEmailNotificationService
 from src.apps.services import EmailNotificationServiceImpl
 from src.apps.user.irepo import IUserRepository
 from src.apps.user.services.auth_user_service import AuthenticateUserService
+from src.apps.user.services.get_user_service import GetCurrentUserService
 from src.apps.user.services.jwt_service import JWTService
 from src.config import all_settings
 from src.config.settings import Settings
@@ -119,3 +120,14 @@ class JWTServiceProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def provide_jwt_service(self, settings: Settings, redis_client: AsyncRedis) -> JWTService:
         return JWTService(settings, redis_client)
+
+
+class GetCurrentUserProvider(Provider):
+    scope = Scope.REQUEST
+
+    @provide
+    def provide_get_current_user_service(
+        self,
+        jwt_service: JWTService,
+    ) -> GetCurrentUserService:
+        return GetCurrentUserService(jwt_service=jwt_service)
