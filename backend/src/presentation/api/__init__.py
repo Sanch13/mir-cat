@@ -6,7 +6,7 @@ from src.presentation.api.user.routes import router as user_router
 
 
 def init_routes(app: FastAPI) -> None:
-    prefix: str = "/presentation/v1"
+    prefix: str = "/api/v1"
     app.include_router(router=auth_router, prefix=f"{prefix}/auth", tags=["Auth"])
     app.include_router(router=user_router, prefix=f"{prefix}/users", tags=["Users"])
     app.include_router(router=first_router, prefix=f"{prefix}", tags=["First step"])
