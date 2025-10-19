@@ -1,8 +1,8 @@
 from dishka import Provider, Scope, provide
 
-from src.apps.user.use_cases.auth_use_case import AuthUserUseCase
-from src.apps.user.use_cases.create_use_case import UserCreateUseCase
-from src.apps.user.use_cases.get_by_id_use_case import UserGetByIdUseCase
+from src.application.auth.use_case.auth_use_case import AuthUserUseCase
+from src.application.user.use_cases.create_use_case import UserCreateUseCase
+from src.application.user.use_cases.get_by_id_use_case import UserGetByIdUseCase
 
 
 class UserUseCaseProvider(Provider):

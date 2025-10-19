@@ -7,10 +7,10 @@ from dishka.integrations.fastapi import setup_dishka as setup_dishka_fastapi
 from dishka.integrations.taskiq import setup_dishka as setup_dishka_taskiq
 from fastapi import FastAPI
 
-from src.api import init_routes
-from src.apps.admin import init_sql_admin
+from src.application.admin import init_sql_admin
 from src.config import all_settings as settings
 from src.config import broker
+from src.presentation.api import init_routes
 from src.provides import container_factory
 
 

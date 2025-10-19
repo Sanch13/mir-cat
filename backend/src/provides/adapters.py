@@ -11,18 +11,18 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from src.apps.interfaces import IEmailNotificationService
-from src.apps.services import EmailNotificationServiceImpl
-from src.apps.user.irepo import IUserRepository
-from src.apps.user.services.auth_user_service import AuthenticateUserService
-from src.apps.user.services.get_user_service import GetCurrentUserService
-from src.apps.user.services.jwt_service import JWTService
+from src.application.auth.services.auth_user_service import AuthenticateUserService
+from src.application.interfaces import IEmailNotificationService
+from src.application.services import EmailNotificationServiceImpl
+from src.application.user.irepo import IUserRepository
 from src.config import all_settings
 from src.config.settings import Settings
-from src.data_access.email.email_sender import EmailSender
-from src.data_access.repositories.user_repo import UserRepository
-from src.data_access.services.hasher import PasswordHasherImpl
 from src.domain.user.interfaces import IPasswordHasher
+from src.infrastructure.data_access.users.repository import UserRepository
+from src.infrastructure.services import PasswordHasherImpl
+from src.infrastructure.services.current_user.current_user_service import GetCurrentUserService
+from src.infrastructure.services.email import EmailSender
+from src.infrastructure.services.jwt.jwt_service import JWTService
 
 
 class SettingsProvider(Provider):

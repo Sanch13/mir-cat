@@ -71,7 +71,7 @@ services:
       "taskiq",
       "worker",
       "src.config.broker:broker",
-      "src.data_access.taskiq.tasks.schedule_tasks",
+      "src.infrastructure.taskiq.tasks.schedule_tasks",
       "--fs-discover",
       "--workers",
       "3",
@@ -101,7 +101,7 @@ services:
       "taskiq",
       "scheduler",
       "src.config.broker:scheduler",
-      "src.data_access.taskiq.tasks.schedule_tasks",
+      "src.infrastructure.taskiq.tasks.schedule_tasks",
       "--log-level",
       "INFO"
     ]
