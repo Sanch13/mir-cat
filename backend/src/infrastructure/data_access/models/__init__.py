@@ -1,5 +1,5 @@
 from src.infrastructure.data_access.models.base import Base
-from src.infrastructure.data_access.models.user import UserModel
+from src.infrastructure.data_access.users.user import UserModel
 
 __all__ = [
     "Base",
