@@ -26,3 +26,9 @@ class UserOutputDto:
     last_name: str | None = None
     is_superuser: bool = False
     is_active: bool = True
+
+
+@dataclass
+class UserAuthInputDto:
+    email: str
+    password: str

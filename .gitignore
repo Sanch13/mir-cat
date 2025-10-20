@@ -19,6 +19,10 @@ venv.bak/
 # pyenv
 .python-version
 
+# Private keys and certificates
+*.pem
+
+
 # mypy
 .mypy_cache/
 .dmypy.json

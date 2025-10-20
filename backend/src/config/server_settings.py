@@ -10,6 +10,3 @@ class ServerSettings(BaseSettings):
     RELOAD: bool = True  # False для программного запуска
     LOG_LEVEL: str = "info"  # info для production, debug для разработки
     USE_COLORS: bool = True
-
-
-server_settings = ServerSettings()

@@ -14,6 +14,3 @@ class SMTPSettings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",  # Игнорировать лишние поля
     )
-
-
-smtp_config = SMTPSettings()
