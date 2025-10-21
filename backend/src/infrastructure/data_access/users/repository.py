@@ -5,6 +5,7 @@ from src.application.user.irepo import IUserRepository
 from src.domain.user.entity import UserEntity
 from src.infrastructure.data_access.models import UserModel
 from src.infrastructure.data_access.users.mapper import UserModelMapper
+from src.infrastructure.exception_decorator import handle_db_errors
 
 
 class UserRepository(IUserRepository):
@@ -12,18 +13,20 @@ class UserRepository(IUserRepository):
         self._session = session
         self.model = UserModel
 
-    # TODO: добавить обработку ошибок
+    @handle_db_errors
     async def save(self, user: UserEntity) -> None:
         user_model = UserModelMapper.entity_to_model(user)
         self._session.add(user_model)
+        await self._session.flush([user_model])  # валидация и выброс ошибок сразу
 
-    # TODO: добавить обработку ошибок
+    @handle_db_errors
     async def get_by_id(self, user_id: str) -> UserEntity | None:
         query = select(self.model).where(self.model.id == user_id)
         result = await self._session.execute(query)
         sql_user = result.scalar_one_or_none()
         return UserModelMapper.model_to_entity(sql_user) if sql_user else None
 
+    @handle_db_errors
     async def get_by_email(self, email: str) -> UserEntity | None:
         query = select(self.model).where(self.model.email == email.lower())
         result = await self._session.execute(query)

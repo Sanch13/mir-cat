@@ -11,6 +11,7 @@ from src.application.admin import init_sql_admin
 from src.config import all_settings as settings
 from src.config import broker
 from src.presentation.api import init_routes
+from src.presentation.api.exception_handler import init_exception_handlers
 from src.provides import container_factory
 
 
@@ -38,6 +39,7 @@ def create_app() -> FastAPI:
         version="1.0.0",
     )
     init_di(app)
+    init_exception_handlers(app)
     init_routes(app)  # Подключение роутеров
     init_sql_admin(app=app)
     return app
