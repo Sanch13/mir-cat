@@ -6,8 +6,11 @@ from typing import Any, TypeVar
 from sqlalchemy.exc import IntegrityError, OperationalError, SQLAlchemyError
 
 from src.base_exceptions import ErrorDetails
-from src.infrastructure.base_exceptions import InfrastructureException
-from src.shared.error_codes import ErrorCode
+from src.infrastructure.base_exceptions import (
+    DatabaseTimedOutException,
+    InfrastructureException,
+    UniqueViolationError,
+)
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -45,32 +48,28 @@ def handle_db_errors(func: F) -> F:  # type: ignore  # noqa: UP047
 
                 details["identifier"] = field
                 details["value"] = unique_value
-                raise InfrastructureException(
-                    message=f"{entity_name} with unique {field} already exists",
-                    code=ErrorCode.DUPLICATE_ENTITY,
+                raise UniqueViolationError(
+                    message_to_extend={"entity_name": entity_name, "field": field},
                     context=e,
                     details=details,
                 ) from e
             details["error_type"] = "integrity_violation"
             raise InfrastructureException(
-                message=f"Data integrity violation in {entity_name}.{operation}",
-                code=ErrorCode.DATA_INTEGRITY_ERROR,
+                message="Data integrity violation",
                 context=e,
                 details=details,
             ) from e
 
         except OperationalError as e:
-            details: ErrorDetails = {
-                "entity": entity_name,
-                "operation": operation,
-                "error_type": "timeout" if "timeout" in str(e).lower() else "operational",
-            }
-            err = "timeout" if "timeout" in str(e).lower() else "operation failed"
+            details: ErrorDetails = {"entity": entity_name, "operation": operation}
+            if "timeout" in str(e).lower():
+                details["error_type"] = "timeout"
+                raise DatabaseTimedOutException(context=e, details=details)
+
+            else:
+                details["error_type"] = "operation failed"
             raise InfrastructureException(
-                message=f"Database {err} in {entity_name}.{operation}",
-                code=ErrorCode.DATABASE_TIMEOUT
-                if "timeout" in str(e).lower()
-                else ErrorCode.DATABASE_ERROR,
+                message="Database operation failed",
                 context=e,
                 details=details,
             ) from e
@@ -82,8 +81,7 @@ def handle_db_errors(func: F) -> F:  # type: ignore  # noqa: UP047
                 "error_type": "sqlalchemy",
             }
             raise InfrastructureException(
-                message=f"Unexpected database error in {entity_name}.{operation}",
-                code=ErrorCode.DATABASE_ERROR,
+                message="Unexpected database error",
                 context=e,
                 details=details,
             ) from e

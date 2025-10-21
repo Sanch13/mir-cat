@@ -1,35 +1,30 @@
 from src.base_exceptions import ErrorDetails, TemplateAppError
-from src.shared.error_codes import ErrorCode
 
 
 class ApplicationError(TemplateAppError):
     """Базовое исключение слоя приложения."""
 
-    DEFAULT_CODE = ErrorCode.APPLICATION_ERROR
     DEFAULT_MESSAGE = "Application error occurred"
 
 
 class EntityNotFoundError(ApplicationError):
     """Сущность не найдена при выполнении Use Case"""
 
-    MESSAGE_TEMPLATE = "{entity} with {criteria} not found"
+    MESSAGE_TEMPLATE = "{entity} with specified {criteria} not found"
 
     @classmethod
     def for_entity(
         cls,
         entity_name: str,
         identifier: str,
-        value: str,
         details: ErrorDetails | None = None,
         context: Exception | None = None,
-        code: ErrorCode = ErrorCode.ENTITY_NOT_FOUND,
     ) -> "EntityNotFoundError":
         return cls(
             message_to_extend={
                 "entity": entity_name.capitalize(),
-                "criteria": f"{identifier}={value}",
+                "criteria": f"{identifier}",
             },
-            code=code,
             context=context,
             details=details,
         )
@@ -38,24 +33,21 @@ class EntityNotFoundError(ApplicationError):
 class DuplicateEntityError(ApplicationError):
     """Сущность с таким уникальным идентификатором уже существует"""
 
-    MESSAGE_TEMPLATE = "{entity} with {criteria} already exists"
+    MESSAGE_TEMPLATE = "{entity} with specified {criteria} already exists"
 
     @classmethod
     def for_entity(
         cls,
         entity_name: str,
         identifier: str,
-        value: str,
         details: ErrorDetails | None = None,
         context: Exception | None = None,
-        code: ErrorCode = ErrorCode.DUPLICATE_ENTITY,
     ) -> "DuplicateEntityError":
         return cls(
             message_to_extend={
                 "entity": entity_name.capitalize(),
-                "criteria": f"{identifier}={value}",
+                "criteria": f"{identifier}",
             },
-            code=code,
             context=context,
             details=details,
         )
@@ -65,35 +57,37 @@ class DatabaseTimedOutError(ApplicationError):
     """Таймаут подключения к БД"""
 
     DEFAULT_MESSAGE = "Database connection timed out"
-    DEFAULT_CODE = ErrorCode.DATABASE_TIMEOUT
 
 
 class DatabaseError(ApplicationError):
     """Ошибка в репозитории"""
 
     DEFAULT_MESSAGE = "Database error"
-    DEFAULT_CODE = ErrorCode.DATABASE_ERROR
 
 
-class UseCaseError(ApplicationError):
-    """Базовое исключение для Use Cases"""
+class ExternalServiceError(ApplicationError):
+    """Ошибка внешнего сервиса"""
 
-    MESSAGE_TEMPLATE = "Use case failed: {use_case_name}"
+    DEFAULT_MESSAGE = "External service error"
 
-    @classmethod
-    def for_use_case(
-        cls,
-        use_case_name: str,
-        context: Exception | None = None,
-        details: ErrorDetails | None = None,
-        code: ErrorCode = ErrorCode.USE_CASE_ERROR,
-    ) -> "UseCaseError":
-        return cls(
-            message_to_extend={"use_case_name": use_case_name},
-            code=code,
-            context=context,
-            details=details,
-        )
+
+# class UseCaseError(ApplicationError):
+#     """Базовое исключение для Use Cases"""
+#
+#     MESSAGE_TEMPLATE = "Use case failed: {use_case_name}"
+#
+#     @classmethod
+#     def for_use_case(
+#         cls,
+#         use_case_name: str,
+#         context: Exception | None = None,
+#         details: ErrorDetails | None = None,
+#     ) -> "UseCaseError":
+#         return cls(
+#             message_to_extend={"use_case_name": use_case_name},
+#             context=context,
+#             details=details,
+#         )
 
 
 # class ValidationError(ApplicationError):

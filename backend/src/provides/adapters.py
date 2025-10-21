@@ -47,15 +47,27 @@ class SqlalchemyProvider(Provider):
         async with sessionmaker() as session:
             try:
                 yield session
-                await session.commit()
+                # Проверяем, активна ли транзакция, перед коммитом
+                if session.in_transaction():
+                    await session.commit()
+                else:
+                    pass  # TODO добавить логирование
             except SQLAlchemyError:
-                await session.rollback()
-                raise
+                try:
+                    await session.rollback()
+                except Exception:
+                    pass  # TODO добавить логирование
             except Exception:
-                await session.rollback()
+                try:
+                    await session.rollback()
+                except Exception:
+                    pass  # TODO добавить логирование
                 raise
             finally:
-                await session.close()
+                try:
+                    await session.close()
+                except Exception:
+                    pass  # TODO добавить логирование
 
 
 class RedisProvider(Provider):

@@ -4,6 +4,7 @@ from uuid import uuid4
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError, ValidationException
 from fastapi.responses import JSONResponse
+from pydantic_core._pydantic_core import ValidationError
 
 from src.application.auth.exceptions import UnauthorizedError
 from src.application.base_exception import (
@@ -12,9 +13,8 @@ from src.application.base_exception import (
     DatabaseTimedOutError,
     DuplicateEntityError,
     EntityNotFoundError,
-    UseCaseError,
 )
-from src.domain.base_domain_ecxeptions import DomainError
+from src.infrastructure.base_exceptions import InfrastructureException
 from src.shared.exceptions import (
     EmptyValueError,
     FieldNegativeError,
@@ -40,6 +40,7 @@ class ExceptionHandler:
         self.status_mapping: dict[type[Exception], int] = {
             # Валидационные ошибки
             RequestValidationError: status.HTTP_422_UNPROCESSABLE_ENTITY,  # ошибка FastApi
+            ValidationError: status.HTTP_422_UNPROCESSABLE_ENTITY,  # Обычная Pydantic ошибка
             ValidationException: status.HTTP_400_BAD_REQUEST,
             InvalidFormatError: status.HTTP_400_BAD_REQUEST,
             EmptyValueError: status.HTTP_400_BAD_REQUEST,
@@ -70,10 +71,9 @@ class ExceptionHandler:
             # Инфраструктурные
             DatabaseTimedOutError: status.HTTP_503_SERVICE_UNAVAILABLE,
             DatabaseError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+            InfrastructureException: status.HTTP_500_INTERNAL_SERVER_ERROR,
             # Подстраховка для необработанных ошибок
-            ApplicationError: status.HTTP_400_BAD_REQUEST,  # Основной тип для Apps
-            DomainError: status.HTTP_400_BAD_REQUEST,  # Fallback: должен быть пойман в Apps
-            UseCaseError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+            ApplicationError: status.HTTP_500_INTERNAL_SERVER_ERROR,  # должен быть пойман в Apps
         }
 
         # Маппинг заголовков для ошибок
@@ -110,6 +110,11 @@ class ExceptionHandler:
             }
         }
 
+        # Добавляем детали для Pydantic ошибок
+        if isinstance(exc, (RequestValidationError, ValidationError)):
+            response_data["error"]["details"] = [
+                {"message": error["msg"], "type": error["type"]} for error in exc.errors()
+            ]
         return JSONResponse(status_code=status_code, content=response_data, headers=headers)
 
 

@@ -1,9 +1,9 @@
 from src.application.base_exception import EntityNotFoundError
 from src.application.exception_decorator import handle_db_errors
 from src.application.user.irepo import IUserRepository
+from src.base_exceptions import ErrorDetails
 from src.domain.user.dtos import UserOutputDto
 from src.domain.user.mappers import UserDomainMapper
-from src.shared.error_codes import ErrorCode
 
 
 class UserGetByIdUseCase:
@@ -16,10 +16,7 @@ class UserGetByIdUseCase:
 
         if user_entity is None:
             raise EntityNotFoundError.for_entity(
-                entity_name="user",
-                identifier="id",
-                value=str(user_id),
-                code=ErrorCode.USER_NOT_FOUND,
+                entity_name="user", identifier="id", details=ErrorDetails(value=user_id)
             )
 
         return UserDomainMapper.entity_to_output_dto(user_entity) if user_entity else None

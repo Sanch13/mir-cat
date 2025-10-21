@@ -5,6 +5,7 @@ from typing import ClassVar
 from src.domain.user.interfaces import IPasswordHasher
 from src.shared.exceptions import (
     InvalidFormatError,
+    InvalidTypeError,
     PasswordInvalidCharactersError,
     PasswordTooLongError,
     PasswordTooShortError,
@@ -138,9 +139,8 @@ class UserEmailVo(StrWithSizeVo):
         if "@" not in self.value:
             raise InvalidFormatError(
                 message_to_extend={
-                    "attr_name": self.__class__.__name__,
+                    "attr_name": "email",
                     "expected_format": "email must contain @ symbol",
-                    "value": self.value,
                 }
             )
 
@@ -148,9 +148,8 @@ class UserEmailVo(StrWithSizeVo):
         if len(parts) != 2:
             raise InvalidFormatError(
                 message_to_extend={
-                    "attr_name": self.__class__.__name__,
+                    "attr_name": "email",
                     "expected_format": "email must have exactly one @ symbol",
-                    "value": self.value,
                 }
             )
 
@@ -159,18 +158,16 @@ class UserEmailVo(StrWithSizeVo):
         if not local_part or not domain:
             raise InvalidFormatError(
                 message_to_extend={
-                    "attr_name": self.__class__.__name__,
+                    "attr_name": "email",
                     "expected_format": "email must have both local part and domain",
-                    "value": self.value,
                 }
             )
 
         if "." not in domain:
             raise InvalidFormatError(
                 message_to_extend={
-                    "attr_name": self.__class__.__name__,
+                    "attr_name": "email",
                     "expected_format": "domain must contain a dot",
-                    "value": self.value,
                 }
             )
 
@@ -190,18 +187,16 @@ class UserEmailVo(StrWithSizeVo):
         if local_part.startswith(".") or local_part.endswith("."):
             raise InvalidFormatError(
                 message_to_extend={
-                    "attr_name": self.__class__.__name__,
+                    "attr_name": "email",
                     "expected_format": "local part cannot start or end with dot",
-                    "value": self.value,
                 }
             )
 
         if ".." in local_part:
             raise InvalidFormatError(
                 message_to_extend={
-                    "attr_name": self.__class__.__name__,
+                    "attr_name": "email",
                     "expected_format": "local part cannot contain consecutive dots",
-                    "value": self.value,
                 }
             )
 
@@ -265,7 +260,13 @@ class PasswordHashVo:
     @staticmethod
     def _validate_plain(plain_password: str):
         if not isinstance(plain_password, str):
-            raise ValueError("Password must be a string")
+            raise InvalidTypeError(
+                message_to_extend={
+                    "expected_type": "string",
+                    "attr_name": "password",
+                    "actual_type": type(plain_password).__name__,
+                }
+            )
 
         password = plain_password.strip()
         length = len(password)
