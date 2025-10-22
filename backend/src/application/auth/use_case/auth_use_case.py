@@ -12,7 +12,7 @@ class AuthUserUseCase:
         self.auth_service = auth_service
         self.jwt_service = jwt_service
 
-    async def execute(self, dto: UserAuthInputDto) -> dict:
+    async def execute(self, dto: UserAuthInputDto, meta: dict) -> dict:
         user_entity = await self.auth_service.authenticate_user(dto)
 
         if user_entity is None:
@@ -20,9 +20,13 @@ class AuthUserUseCase:
 
         access_token = await self.jwt_service.create_access_token(user_entity)
         refresh_token = await self.jwt_service.create_refresh_token(user_entity)
+        expires_in = self.jwt_service.settings.ACCESS_TOKEN_LIFETIME_MINUTES * 60
+        expires_in_refresh = self.jwt_service.settings.REFRESH_TOKEN_LIFETIME_DAYS * 24 * 3600
 
-        return {
-            "message": "Добро пожаловать в систему",
+        dict_ = {
+            "expires_in": expires_in,
+            "expires_in_refresh": expires_in_refresh,
             "access_token": access_token,
             "refresh_token": refresh_token,
         }
+        return dict_
