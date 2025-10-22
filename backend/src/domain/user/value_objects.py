@@ -2,14 +2,13 @@ import re
 from dataclasses import dataclass
 from typing import ClassVar
 
-from src.domain.user.interfaces import IPasswordHasher
-from src.shared.exceptions import (
-    InvalidFormatError,
-    InvalidTypeError,
+from src.domain.user.exeptions import (
     PasswordInvalidCharactersError,
     PasswordTooLongError,
     PasswordTooShortError,
 )
+from src.domain.user.interfaces import IPasswordHasher
+from src.shared.exceptions import InvalidFormatError, InvalidTypeError
 from src.shared.value_objects import DatetimeVo, StrWithSizeVo, UuidVo
 
 MIN_PASSWORD_LENGTH = 5

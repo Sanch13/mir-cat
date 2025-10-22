@@ -14,6 +14,11 @@ from src.application.base_exception import (
     DuplicateEntityError,
     EntityNotFoundError,
 )
+from src.domain.user.exeptions import (
+    PasswordInvalidCharactersError,
+    PasswordTooLongError,
+    PasswordTooShortError,
+)
 from src.infrastructure.base_exceptions import InfrastructureException
 from src.shared.exceptions import (
     EmptyValueError,
@@ -23,9 +28,6 @@ from src.shared.exceptions import (
     FieldZeroError,
     InvalidFormatError,
     InvalidTypeError,
-    PasswordInvalidCharactersError,
-    PasswordTooLongError,
-    PasswordTooShortError,
 )
 
 # TODO Логирование

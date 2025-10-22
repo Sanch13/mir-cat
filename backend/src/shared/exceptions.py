@@ -58,32 +58,3 @@ class InvalidFormatError(DomainError):
     """Invalid format error."""
 
     MESSAGE_TEMPLATE = "Field '{attr_name}' has invalid format. Expected format: {expected_format}."
-
-
-class PasswordTooShortError(DomainError):
-    """The password is too short"""
-
-    MESSAGE_TEMPLATE = (
-        "The password is too short!"
-        "The '{attr_name}' field must be at least {min_length} characters long."
-        "Current length is {current_length} characters"
-    )
-
-
-class PasswordTooLongError(DomainError):
-    """The password is too long"""
-
-    MESSAGE_TEMPLATE = (
-        "The password is too long!"
-        "The '{attr_name}' field must be at least {min_length} characters long."
-        "Current length is {current_length} characters"
-    )
-
-
-class PasswordInvalidCharactersError(DomainError):
-    """The password contains invalid characters"""
-
-    MESSAGE_TEMPLATE = (
-        "The password contains invalid characters! "
-        "The '{attr_name}' field must include only latin letters, digits and special symbols. "
-    )
