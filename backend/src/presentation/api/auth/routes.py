@@ -38,4 +38,4 @@ async def login_user(
         path="/auth/refresh",  # ограничить область действия cookie
         max_age=max_age,
     )
-    return AuthUserApiMapper.dict_to_schema(**data_out)
+    return AuthUserApiMapper.dict_to_schema(data_out)

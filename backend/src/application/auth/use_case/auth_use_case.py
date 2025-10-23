@@ -1,3 +1,4 @@
+from src.application.auth.exceptions import UnauthorizedError
 from src.application.auth.services.auth_user_service import AuthenticateUserService
 from src.application.exception_decorator import handle_db_errors
 from src.domain.user.dtos import UserAuthInputDto
@@ -14,7 +15,6 @@ class AuthUserUseCase:
         self.jwt_service = jwt_service
 
     @handle_db_errors
-    async def execute(self, dto: UserAuthInputDto) -> dict:
     async def execute(self, dto: UserAuthInputDto, meta: dict) -> dict:
         user_entity = await self.auth_service.authenticate_user(dto)
 
