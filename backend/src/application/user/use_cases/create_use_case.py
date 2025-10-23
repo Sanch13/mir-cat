@@ -20,8 +20,11 @@ class UserCreateUseCase:
 
     @handle_db_errors
     async def execute(self, dto: UserInputDto) -> UserOutputDto:
+        # TODO email check
+
         password_vo = PasswordHashVo.from_plain(plain=dto.password, hasher=self.hasher)
         user_entity = UserDomainMapper.input_dto_to_entity(dto=dto, password_vo=password_vo)
+
         await self.user_repo.save(user_entity)
 
         data = user_entity.email.value

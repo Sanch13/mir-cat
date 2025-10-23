@@ -40,5 +40,5 @@ async def get_user_by_id(
 
 @router.get("/{user_id}", status_code=200, response_model=UserResponseSchema)
 async def get_by_id(user_id: UUID, use_case: FromDishka[UserGetByIdUseCase]) -> UserResponseSchema:
-    dto_out = await use_case.execute(str(user_id))
+    dto_out = await use_case.execute(user_id)
     return UserApiMapper.dto_to_schema(dto_out)

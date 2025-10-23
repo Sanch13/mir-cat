@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import HTTPException, Request
 
 from src.infrastructure.services.jwt.jwt_service import JWTService
@@ -63,7 +65,7 @@ class GetCurrentUserService:
 
         return token
 
-    async def get_current_user_id(self, request: Request) -> str:
+    async def get_current_user_id(self, request: Request) -> UUID:
         """Получаем user_id из Request"""
         token = await self.extract_bearer_token(request)
         payload = await self.jwt_service.verify_access_token(token)
@@ -72,4 +74,4 @@ class GetCurrentUserService:
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token payload")
 
-        return user_id
+        return UUID(user_id)

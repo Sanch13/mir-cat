@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,10 +19,10 @@ class UserRepository(IUserRepository):
     async def save(self, user: UserEntity) -> None:
         user_model = UserModelMapper.entity_to_model(user)
         self._session.add(user_model)
-        await self._session.flush([user_model])  # валидация и выброс ошибок сразу
+        # await self._session.flush([user_model])  # валидация и выброс ошибок сразу
 
     @handle_db_errors
-    async def get_by_id(self, user_id: str) -> UserEntity | None:
+    async def get_by_id(self, user_id: UUID) -> UserEntity | None:
         query = select(self.model).where(self.model.id == user_id)
         result = await self._session.execute(query)
         sql_user = result.scalar_one_or_none()
