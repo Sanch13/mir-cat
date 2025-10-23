@@ -1,6 +1,8 @@
+from src.application.base_exception import DuplicateEntityError
 from src.application.exception_decorator import handle_db_errors
 from src.application.interfaces import IEmailNotificationService
 from src.application.user.irepo import IUserRepository
+from src.base_exceptions import ErrorDetails
 from src.domain.user import PasswordHashVo
 from src.domain.user.dtos import UserInputDto, UserOutputDto
 from src.domain.user.interfaces import IPasswordHasher
@@ -20,7 +22,12 @@ class UserCreateUseCase:
 
     @handle_db_errors
     async def execute(self, dto: UserInputDto) -> UserOutputDto:
-        # TODO email check
+        if self.user_repo.email_exists(dto.email):
+            raise DuplicateEntityError.for_entity(
+                entity_name="User",
+                identifier="email",
+                details=ErrorDetails(value=dto.email, operation="UserCreateUseCase"),
+            )
 
         password_vo = PasswordHashVo.from_plain(plain=dto.password, hasher=self.hasher)
         user_entity = UserDomainMapper.input_dto_to_entity(dto=dto, password_vo=password_vo)

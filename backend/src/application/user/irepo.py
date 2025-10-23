@@ -17,4 +17,6 @@ class IUserRepository(ABC):
     async def get_by_email(self, email: str) -> UserEntity | None:
         raise NotImplementedError
 
-    # TODO exist by email
+    @abstractmethod
+    async def email_exists(self, email: str) -> bool:
+        raise NotImplementedError
