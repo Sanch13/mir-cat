@@ -22,7 +22,7 @@ class UserCreateUseCase:
 
     @handle_db_errors
     async def execute(self, dto: UserInputDto) -> UserOutputDto:
-        if self.user_repo.email_exists(dto.email):
+        if await self.user_repo.email_exists(dto.email):
             raise DuplicateEntityError.for_entity(
                 entity_name="User",
                 identifier="email",
