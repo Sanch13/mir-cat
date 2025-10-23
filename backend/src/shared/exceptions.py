@@ -1,34 +1,33 @@
-from src.base_exceptions import TemplateAppError
+from src.domain.base_domain_ecxeptions import DomainError
 
 
-class EmptyValueError(TemplateAppError):
+class EmptyValueError(DomainError):
     """Empty value error."""
 
-    MESSAGE_TEMPLATE = "Field '{attr_name}' cannot be empty, but got value: {value}"
+    MESSAGE_TEMPLATE = "Field '{attr_name}' cannot be empty"
 
 
-class InvalidTypeError(TemplateAppError):
+class InvalidTypeError(DomainError):
     """Invalid type error."""
 
     MESSAGE_TEMPLATE = (
-        "Expected type '{expected_type}' for field '{attr_name}', "
-        "but got '{actual_type}' with value: '{value}'"
+        "Expected type '{expected_type}' for field '{attr_name}', but got '{actual_type}'"
     )
 
 
-class FieldNegativeError(TemplateAppError):
+class FieldNegativeError(DomainError):
     """Negative error."""
 
-    MESSAGE_TEMPLATE = "Field '{attr_name}' cannot be negative, but got value: {value}"
+    MESSAGE_TEMPLATE = "Field '{attr_name}' cannot be negative"
 
 
-class FieldZeroError(TemplateAppError):
+class FieldZeroError(DomainError):
     """Zero error."""
 
     MESSAGE_TEMPLATE = "Field '{attr_name}' cannot be zero"
 
 
-class EntityWithoutIdHashError(TemplateAppError):
+class EntityWithoutIdHashError(DomainError):
     """
     Exception raised when attempting to compute the hash
     of an entity without an assigned ID.
@@ -37,57 +36,25 @@ class EntityWithoutIdHashError(TemplateAppError):
     MESSAGE_TEMPLATE = "Cannot hash an entity of type {entity} without an ID."
 
 
-class FieldTooShortError(TemplateAppError):
+class FieldTooShortError(DomainError):
     """Field too short error."""
 
     MESSAGE_TEMPLATE = (
         "The '{attr_name}' field must be at least {min_length} characters long. "
-        "Current length is {current_length} characters: '{value}'"
+        "Current length is {current_length} characters"
     )
 
 
-class FieldTooLongError(TemplateAppError):
+class FieldTooLongError(DomainError):
     """Field too long error."""
 
     MESSAGE_TEMPLATE = (
         "Field '{attr_name}' exceeds maximum length of {max_length} characters. "
-        "Got {current_length} characters: {value}"
+        "Got {current_length} characters"
     )
 
 
-class InvalidFormatError(TemplateAppError):
+class InvalidFormatError(DomainError):
     """Invalid format error."""
 
-    MESSAGE_TEMPLATE = (
-        "Field '{attr_name}' has invalid format. Expected format: {expected_format}. Got: {value}"
-    )
-
-
-class PasswordTooShortError(TemplateAppError):
-    """The password is too short"""
-
-    MESSAGE_TEMPLATE = (
-        "The password is too short!"
-        "The '{attr_name}' field must be at least {min_length} characters long."
-        "Current length is {current_length} characters: '{value}'"
-    )
-
-
-class PasswordTooLongError(TemplateAppError):
-    """The password is too long"""
-
-    MESSAGE_TEMPLATE = (
-        "The password is too long!"
-        "The '{attr_name}' field must be at least {min_length} characters long."
-        "Current length is {current_length} characters: '{value}'"
-    )
-
-
-class PasswordInvalidCharactersError(TemplateAppError):
-    """The password contains invalid characters"""
-
-    MESSAGE_TEMPLATE = (
-        "The password contains invalid characters! "
-        "The '{attr_name}' field must include only latin letters, digits and special symbols. "
-        "Provided value: '{value}'"
-    )
+    MESSAGE_TEMPLATE = "Field '{attr_name}' has invalid format. Expected format: {expected_format}."

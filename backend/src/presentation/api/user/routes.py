@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBearer
@@ -37,6 +39,6 @@ async def get_user_by_id(
 
 
 @router.get("/{user_id}", status_code=200, response_model=UserResponseSchema)
-async def get_by_id(user_id: str, use_case: FromDishka[UserGetByIdUseCase]) -> UserResponseSchema:
+async def get_by_id(user_id: UUID, use_case: FromDishka[UserGetByIdUseCase]) -> UserResponseSchema:
     dto_out = await use_case.execute(user_id)
     return UserApiMapper.dto_to_schema(dto_out)

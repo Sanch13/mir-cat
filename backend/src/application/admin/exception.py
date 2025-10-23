@@ -1,5 +1,5 @@
-from src.base_exceptions import TemplateAppError
+from src.application.base_exception import ApplicationError
 
 
-class InvalidAdminUserDataError(TemplateAppError):
+class InvalidAdminUserDataError(ApplicationError):
     pass
