@@ -1,0 +1,45 @@
+name: Run tests for an open pull request
+run-name: "Pull request opened by a @${{ github.actor }} for a branch ${{ github.base_ref }} from ${{ github.head_ref }}"
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+      - name: Cache uv files
+        id: python-deps
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-uv
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('./pyproject.toml') }}
+      - name: Install dependencies
+        run: uv sync
+      - name: Add pytest-json-ctrf
+        run: uv add pytest-json-ctrf --dev
+      - name: Run tests
+        run: uv run pytest --ctrf ./ctrf/report.json
+      - name: Publish Test Report
+        uses: ctrf-io/github-test-reporter@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          report-path: './ctrf/*.json'
+          github-report: true
+          pull-request-report: true
+          insights-report: true
+        if: always()
