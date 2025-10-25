@@ -4,10 +4,10 @@ from src.config.glob_settings import ENV_FILE
 
 
 class SMTPSettings(BaseSettings):
-    host: str
-    port: int
-    user: str
-    password: str
+    host: str = ""
+    port: int = 587
+    user: str = "test_user"
+    password: str = "test_password"
 
     model_config = SettingsConfigDict(
         env_prefix="smtp_",
