@@ -4,11 +4,11 @@ from pydantic import PostgresDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
+from src.config.glob_settings import ENV_FILE
+
 
 class DBSettings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file="../../../.env", env_ignore_empty=True, extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=str(ENV_FILE), env_ignore_empty=True, extra="ignore")
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str

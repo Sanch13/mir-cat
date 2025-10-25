@@ -1,10 +1,10 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from src.config.glob_settings import ENV_FILE
+
 
 class ServerSettings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file="../../../.env", env_ignore_empty=True, extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=str(ENV_FILE), env_ignore_empty=True, extra="ignore")
     HOST: str = "0.0.0.0"
     PORT: int = 8000
     RELOAD: bool = True  # False для программного запуска

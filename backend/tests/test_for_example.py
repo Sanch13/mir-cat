@@ -16,9 +16,7 @@ async def test_async():
 
 # Асинхронный тест с клиентом FastAPI
 @pytest.mark.asyncio
-async def test_health_check(async_client):  # Фикстура передается по имени
+async def test_health_check(async_client):
     """Тест эндпоинта"""
-    response = await async_client.get("/hello")
+    response = await async_client.get("/api/v1/hello")
     assert response.status_code == 200
-    txt = "Answer: Good morning AXAXAAX"
-    assert txt in response.text

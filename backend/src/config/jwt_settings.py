@@ -3,6 +3,8 @@ from functools import cached_property
 from cryptography.hazmat.primitives import serialization
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from src.config.glob_settings import ENV_FILE
+
 
 class JWTSettings(BaseSettings):
     PRIVATE_KEY_PATH: str
@@ -13,7 +15,7 @@ class JWTSettings(BaseSettings):
 
     model_config = SettingsConfigDict(
         case_sensitive=False,
-        env_file="../../../.env",  # TODO: Вынести в отдельный env?
+        env_file=str(ENV_FILE),  # TODO: Вынести в отдельный env?
         env_file_encoding="utf-8",
         extra="ignore",  # Игнорировать лишние поля
     )
