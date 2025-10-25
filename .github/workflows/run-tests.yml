@@ -40,7 +40,7 @@ jobs:
 
       - name: Run tests
         working-directory: backend
-        run: uv run pytest --ctrf ./ctrf/report.json
+        run: python -m pytest --ctrf ./ctrf/report.json
 
       - name: Publish Test Report
         uses: ctrf-io/github-test-reporter@v1
