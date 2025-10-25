@@ -42,3 +42,19 @@ ignore = ["E701"]
 [tool.ruff.format]
 indent-style = "space"
 quote-style = "double"
+
+[dependency-groups]
+dev = [
+    "httpx==0.28.1",
+    "pytest==8.4.2",
+    "pytest-asyncio==1.2.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = "tests/backend"
+asyncio_mode = "auto"
+addopts = [
+    "--verbose",
+    "--color=yes",
+    "--strict-markers",
+]
