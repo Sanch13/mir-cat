@@ -20,7 +20,3 @@ async def test_health_check(async_client):
     """Тест эндпоинта"""
     response = await async_client.get("/api/v1/hello")
     assert response.status_code == 200
-
-
-def test_fail():
-    assert 2 * 3 == 4
