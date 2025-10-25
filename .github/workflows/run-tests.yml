@@ -32,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: backend
-        run: uv sync
+        run: uv sync --dev
 
       - name: Add pytest-json-ctrf
         working-directory: backend
