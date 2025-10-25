@@ -40,14 +40,6 @@ jobs:
 
       - name: Run tests
         working-directory: backend
-        env:
-          # Database settings для тестов
-          POSTGRES_USER: test_user  # pragma: allowlist secret
-          POSTGRES_PASSWORD: test_password  # pragma: allowlist secret
-          POSTGRES_DB: test_db  # pragma: allowlist secret
-          DB_HOST: localhost  # pragma: allowlist secret
-          DB_PORT: 5432  # pragma: allowlist secret
-
         run: uv run pytest --ctrf ./ctrf/report.json
 
       - name: Publish Test Report
