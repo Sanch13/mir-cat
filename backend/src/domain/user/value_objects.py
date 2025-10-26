@@ -11,8 +11,6 @@ from src.domain.user.interfaces import IPasswordHasher
 from src.shared.exceptions import InvalidFormatError, InvalidTypeError
 from src.shared.value_objects import DatetimeVo, StrWithSizeVo, UuidVo
 
-MIN_PASSWORD_LENGTH = 5
-MAX_PASSWORD_LENGTH = 70
 MIN_EMAIL_LENGTH = 5
 MAX_EMAIL_LENGTH = 254
 MAX_NAME_LENGTH = 30
@@ -220,6 +218,8 @@ class UserEmailVo(StrWithSizeVo):
         return self.value.split("@")[0]
 
 
+MIN_PASSWORD_LENGTH = 6
+MAX_PASSWORD_LENGTH = 70
 PASSWORD_RULES_REGEX = {
     "lowercase": re.compile(r"[a-z]"),
     "uppercase": re.compile(r"[A-Z]"),
@@ -297,15 +297,14 @@ class PasswordHashVo:
                     "value": "<hidden>",
                 }
             )
-        #  TODO: Обсудить какие критерии пароля такие и выставить правила
-        # if not PASSWORD_RULES_REGEX["lowercase"].search(password):
-        #     raise ValueError("Пароль должен содержать хотя бы одну строчную букву (a-z)")
-        #
-        # if not PASSWORD_RULES_REGEX["uppercase"].search(password):
-        #     raise ValueError("Пароль должен содержать хотя бы одну заглавную букву (A-Z)")
-        #
-        # if not PASSWORD_RULES_REGEX["digit"].search(password):
-        #     raise ValueError("Пароль должен содержать хотя бы одну цифру")
-        #
+        if not PASSWORD_RULES_REGEX["lowercase"].search(password):
+            raise ValueError("Пароль должен содержать хотя бы одну строчную букву (a-z)")
+
+        if not PASSWORD_RULES_REGEX["uppercase"].search(password):
+            raise ValueError("Пароль должен содержать хотя бы одну заглавную букву (A-Z)")
+
+        if not PASSWORD_RULES_REGEX["digit"].search(password):
+            raise ValueError("Пароль должен содержать хотя бы одну цифру")
+
         # if not PASSWORD_RULES_REGEX["special"].search(password):
         #     raise ValueError("Пароль должен содержать хотя бы один спецсимвол (!@#$%^&* и т. д.)")
