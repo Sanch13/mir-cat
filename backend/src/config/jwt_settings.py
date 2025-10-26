@@ -3,17 +3,19 @@ from functools import cached_property
 from cryptography.hazmat.primitives import serialization
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from src.config.glob_settings import ENV_FILE
+
 
 class JWTSettings(BaseSettings):
-    PRIVATE_KEY_PATH: str
-    PUBLIC_KEY_PATH: str
-    ALGORITHM: str
-    ACCESS_TOKEN_LIFETIME_MINUTES: int
-    REFRESH_TOKEN_LIFETIME_DAYS: int
+    PRIVATE_KEY_PATH: str = "test_path"
+    PUBLIC_KEY_PATH: str = "test_path"
+    ALGORITHM: str = "RS256"
+    ACCESS_TOKEN_LIFETIME_MINUTES: int = 30
+    REFRESH_TOKEN_LIFETIME_DAYS: int = 14
 
     model_config = SettingsConfigDict(
         case_sensitive=False,
-        env_file="../../../.env",  # TODO: Вынести в отдельный env?
+        env_file=str(ENV_FILE),  # TODO: Вынести в отдельный env?
         env_file_encoding="utf-8",
         extra="ignore",  # Игнорировать лишние поля
     )
