@@ -16,6 +16,9 @@ from src.application.base_exception import (
 )
 from src.domain.user.exeptions import (
     PasswordInvalidCharactersError,
+    PasswordInvalidDigitError,
+    PasswordInvalidLowercaseError,
+    PasswordInvalidUppercaseError,
     PasswordTooLongError,
     PasswordTooShortError,
 )
@@ -51,9 +54,13 @@ class ExceptionHandler:
             FieldZeroError: status.HTTP_400_BAD_REQUEST,
             FieldTooShortError: status.HTTP_400_BAD_REQUEST,
             FieldTooLongError: status.HTTP_400_BAD_REQUEST,
+            # Валидационные ошибки password
             PasswordTooShortError: status.HTTP_400_BAD_REQUEST,
             PasswordTooLongError: status.HTTP_400_BAD_REQUEST,
             PasswordInvalidCharactersError: status.HTTP_400_BAD_REQUEST,
+            PasswordInvalidLowercaseError: status.HTTP_400_BAD_REQUEST,
+            PasswordInvalidUppercaseError: status.HTTP_400_BAD_REQUEST,
+            PasswordInvalidDigitError: status.HTTP_400_BAD_REQUEST,
             # Ошибки "не найдено"
             EntityNotFoundError: status.HTTP_404_NOT_FOUND,
             # Авторизация/аутентификация
