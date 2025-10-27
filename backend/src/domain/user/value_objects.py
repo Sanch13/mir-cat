@@ -4,6 +4,9 @@ from typing import ClassVar
 
 from src.domain.user.exeptions import (
     PasswordInvalidCharactersError,
+    PasswordInvalidDigitError,
+    PasswordInvalidLowercaseError,
+    PasswordInvalidUppercaseError,
     PasswordTooLongError,
     PasswordTooShortError,
 )
@@ -298,13 +301,13 @@ class PasswordHashVo:
                 }
             )
         if not PASSWORD_RULES_REGEX["lowercase"].search(password):
-            raise ValueError("Пароль должен содержать хотя бы одну строчную букву (a-z)")
+            raise PasswordInvalidLowercaseError()
 
         if not PASSWORD_RULES_REGEX["uppercase"].search(password):
-            raise ValueError("Пароль должен содержать хотя бы одну заглавную букву (A-Z)")
+            raise PasswordInvalidUppercaseError()
 
         if not PASSWORD_RULES_REGEX["digit"].search(password):
-            raise ValueError("Пароль должен содержать хотя бы одну цифру")
+            raise PasswordInvalidDigitError()
 
         # if not PASSWORD_RULES_REGEX["special"].search(password):
         #     raise ValueError("Пароль должен содержать хотя бы один спецсимвол (!@#$%^&* и т. д.)")
