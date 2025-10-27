@@ -10,6 +10,9 @@ from src.domain.user.exeptions import (
     PasswordInvalidCharactersError,
     PasswordTooLongError,
     PasswordTooShortError,
+    PasswordInvalidLowercaseError,
+    PasswordInvalidUppercaseError,
+    PasswordInvalidDigitError,
 )
 
 
@@ -96,9 +99,9 @@ def test_various_valid_passwords(valid_password, mock_hasher):
         ("Ab1!c", PasswordTooShortError),  # слишком короткий
         ("            ", PasswordTooShortError),  # пробелы
         ("A" * MAX_PASSWORD_LENGTH + "b1!", PasswordTooLongError),  # слишком длинный
-        ("VALID123!", ValueError),  # нет строчных
-        ("valid123!", ValueError),  # нет заглавных
-        ("ValidPass!", ValueError),  # нет цифр
+        ("VALID123!", PasswordInvalidLowercaseError),  # нет строчных
+        ("valid123!", PasswordInvalidUppercaseError),  # нет заглавных
+        ("ValidPass!", PasswordInvalidDigitError),  # нет цифр
         ("Valid123привет", PasswordInvalidCharactersError),  # кириллица нельзя
         ("z   R1", PasswordInvalidCharactersError),  # пробелы нельзя
         (123, InvalidTypeError),  # не строка
