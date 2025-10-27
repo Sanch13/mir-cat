@@ -3,7 +3,7 @@ name = "mir-cat"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.14"
 dependencies = [
     "aiosmtplib==4.0.2",
     "alembic==1.16.5",
@@ -42,3 +42,21 @@ ignore = ["E701"]
 [tool.ruff.format]
 indent-style = "space"
 quote-style = "double"
+
+[dependency-groups]
+dev = [
+    "httpx==0.28.1",
+    "pytest==8.4.2",
+    "pytest-asyncio==1.2.0",
+    "pytest-sugar>=1.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "src"]
+asyncio_mode = "auto"
+addopts = [
+    "--color=yes",
+    "-ra",
+    "-q",
+]

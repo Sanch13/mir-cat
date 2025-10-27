@@ -49,3 +49,7 @@ migrate-up:
 .PHONY: migrate-down  # make migrate-down
 migrate-down:
 	@${DC} -f ${LOCAL_FILE} exec ${SERVICE_NAME} alembic downgrade -1
+
+.PHONY: test
+test:  #  Запускает тесты только в папке tests
+	@cd backend && uv run pytest tests && cd ..
