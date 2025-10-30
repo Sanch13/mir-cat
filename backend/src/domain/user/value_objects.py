@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 from src.domain.user.exeptions import (
+    EmailInvalidCharactersError,
+    EmailInvalidFormatError,
     PasswordInvalidCharactersError,
     PasswordInvalidDigitError,
     PasswordInvalidLowercaseError,
@@ -11,7 +13,7 @@ from src.domain.user.exeptions import (
     PasswordTooShortError,
 )
 from src.domain.user.interfaces import IPasswordHasher
-from src.shared.exceptions import InvalidFormatError, InvalidTypeError
+from src.shared.exceptions import InvalidTypeError
 from src.shared.value_objects import DatetimeVo, StrWithSizeVo, UuidVo
 
 MIN_EMAIL_LENGTH = 5
@@ -117,10 +119,12 @@ class UserEmailVo(StrWithSizeVo):
         Execution order:
         1. Parent class validation (length constraints)
         2. Basic email format validation
-        3. Specific email rule validation
+        3. Validation of allowed chars
+        4. Specific email rule validation
         """
         super().__post_init__()
         self._validate_email_format()
+        self._validate_email_symbols()
         self._validate_specific_rules()
 
     def _validate_email_format(self):
@@ -134,42 +138,121 @@ class UserEmailVo(StrWithSizeVo):
         - Domain contains TLD separator (dot)
 
         Raises:
-            InvalidFormatError: If basic email structure is invalid
+            EmailInvalidFormatError: If basic email structure is invalid
         """
         if "@" not in self.value:
-            raise InvalidFormatError(
+            raise EmailInvalidFormatError(
                 message_to_extend={
-                    "attr_name": "email",
-                    "expected_format": "email must contain @ symbol",
+                    "violated_rule": "email must contain @ symbol",
                 }
             )
 
         parts = self.value.split("@")
         if len(parts) != 2:
-            raise InvalidFormatError(
+            raise EmailInvalidFormatError(
                 message_to_extend={
-                    "attr_name": "email",
-                    "expected_format": "email must have exactly one @ symbol",
+                    "violated_rule": "email must have exactly one @ symbol",
                 }
             )
 
         local_part, domain = parts
 
         if not local_part or not domain:
-            raise InvalidFormatError(
+            raise EmailInvalidFormatError(
                 message_to_extend={
-                    "attr_name": "email",
-                    "expected_format": "email must have both local part and domain",
+                    "violated_rule": "email must have both local part and domain",
                 }
             )
 
-        if "." not in domain:
-            raise InvalidFormatError(
+        parts = domain.split(".")
+
+        if len(parts) < 2:
+            raise EmailInvalidFormatError(
+                message_to_extend={"violated_rule": "domain must contain at least one dot"}
+            )
+
+        top_level_domain = parts[-1]
+
+        if not top_level_domain:
+            raise EmailInvalidFormatError(
                 message_to_extend={
-                    "attr_name": "email",
-                    "expected_format": "domain must contain a dot",
+                    "violated_rule": "domain must contain top level domain after a dot",
                 }
             )
+
+        for part in parts:
+            if not part:
+                raise EmailInvalidFormatError(
+                    message_to_extend={
+                        "violated_rule": "domain parts cannot be empty",
+                    }
+                )
+
+    def _validate_email_symbols(self):
+        """
+        Validate email characters against allowed character sets.
+
+        This method checks both local part (before @) and domain part (after @)
+        for invalid characters based on RFC 5322 specifications.
+
+        Local part allowed characters:
+        - Letters: a-z, A-Z
+        - Digits: 0-9
+        - Special: . ! # $ % & ' * + / = ? ^ _ ` { | } ~ -
+
+        Domain part allowed characters:
+        - Letters: a-z, A-Z
+        - Digits: 0-9
+        - Hyphen: -
+        - Dot: . (as separator)
+
+        Raises:
+            EmailInvalidCharactersError: If invalid characters are found
+                                       in either local or domain part.
+        """
+        errors = []
+        local_allowed_pattern = r"^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+$"
+        domain_allowed_pattern = r"^[a-zA-Z0-9.-]+$"
+
+        invalid_local_part_chars = self._get_invalid_chars(self.local_part, local_allowed_pattern)
+        if invalid_local_part_chars:
+            errors.append(
+                f"Local part (before @) contains invalid characters: {invalid_local_part_chars}."
+            )
+
+        invalid_domain_chars = self._get_invalid_chars(self.domain, domain_allowed_pattern)
+        if invalid_domain_chars:
+            errors.append(
+                f"Domain part (after @) contains invalid characters: {invalid_domain_chars}."
+            )
+
+        if errors:
+            raise EmailInvalidCharactersError(
+                message_to_extend={
+                    "errors": f"{' '.join(errors)}",
+                }
+            )
+
+    @staticmethod
+    def _get_invalid_chars(string: str, pattern: str):
+        """
+        Find and return invalid characters in a string based on regex pattern.
+
+        Args:
+            string: The string to validate
+            pattern: Regex pattern that matches allowed individual characters
+
+        Returns:
+            str: Comma-separated string of invalid characters in format 'char',
+                 or None if all characters are valid
+        """
+        invalid_chars = set()
+        for char in string:
+            if not re.match(pattern, char):
+                invalid_chars.add(char)
+
+        if invalid_chars:
+            return ", ".join([f"'{char}'" for char in invalid_chars])
 
     def _validate_specific_rules(self):
         """
@@ -178,25 +261,37 @@ class UserEmailVo(StrWithSizeVo):
         Rules based on RFC 5322:
         - Local part cannot start or end with dot
         - Local part cannot contain consecutive dots
+        - Domain cannot start or end with dot hyphen
 
         These rules prevent common email formatting errors.
+
+        Raises:
+            EmailInvalidFormatError: If specific email rules are violated.
         """
         # Local part validation (before @)
         local_part = self.local_part
 
         if local_part.startswith(".") or local_part.endswith("."):
-            raise InvalidFormatError(
+            raise EmailInvalidFormatError(
                 message_to_extend={
-                    "attr_name": "email",
-                    "expected_format": "local part cannot start or end with dot",
+                    "violated_rule": "local part cannot start or end with dot",
                 }
             )
 
         if ".." in local_part:
-            raise InvalidFormatError(
+            raise EmailInvalidFormatError(
                 message_to_extend={
-                    "attr_name": "email",
-                    "expected_format": "local part cannot contain consecutive dots",
+                    "violated_rule": "local part cannot contain consecutive dots",
+                }
+            )
+
+        # Domain validation (after @)
+        domain = self.domain
+
+        if domain.startswith("-") or domain.endswith("-"):
+            raise EmailInvalidFormatError(
+                message_to_extend={
+                    "violated_rule": "domain cannot start or end with hyphen",
                 }
             )
 
