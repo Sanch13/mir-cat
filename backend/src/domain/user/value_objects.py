@@ -180,14 +180,6 @@ class UserEmailVo(StrWithSizeVo):
                 }
             )
 
-        for part in parts:
-            if not part:
-                raise EmailInvalidFormatError(
-                    message_to_extend={
-                        "violated_rule": "domain parts cannot be empty",
-                    }
-                )
-
     def _validate_email_symbols(self):
         """
         Validate email characters against allowed character sets.
@@ -218,6 +210,16 @@ class UserEmailVo(StrWithSizeVo):
         if invalid_local_part_chars:
             errors.append(
                 f"Local part (before @) contains invalid characters: {invalid_local_part_chars}."
+            )
+
+        special_chars_pattern = r"^[^!#$%&\'*+/=?^_`{|}~-]+$"
+        invalid_first_and_last = self._get_invalid_chars(
+            self.local_part[0] + self.local_part[-1], special_chars_pattern
+        )
+        if invalid_first_and_last:
+            errors.append(
+                f"First/last symbol of local part (before @) contains invalid characters: "
+                f"{invalid_first_and_last}."
             )
 
         invalid_domain_chars = self._get_invalid_chars(self.domain, domain_allowed_pattern)
@@ -268,6 +270,13 @@ class UserEmailVo(StrWithSizeVo):
         Raises:
             EmailInvalidFormatError: If specific email rules are violated.
         """
+        if ".." in self.value:
+            raise EmailInvalidFormatError(
+                message_to_extend={
+                    "violated_rule": "email cannot contain consecutive dots",
+                }
+            )
+
         # Local part validation (before @)
         local_part = self.local_part
 
@@ -275,13 +284,6 @@ class UserEmailVo(StrWithSizeVo):
             raise EmailInvalidFormatError(
                 message_to_extend={
                     "violated_rule": "local part cannot start or end with dot",
-                }
-            )
-
-        if ".." in local_part:
-            raise EmailInvalidFormatError(
-                message_to_extend={
-                    "violated_rule": "local part cannot contain consecutive dots",
                 }
             )
 
