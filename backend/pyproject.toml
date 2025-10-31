@@ -60,3 +60,7 @@ addopts = [
     "-ra",
     "-q",
 ]
+markers = [
+    "unit: mark a test as unit-level",
+    "integration: mark a test as integration-level"
+    ]
