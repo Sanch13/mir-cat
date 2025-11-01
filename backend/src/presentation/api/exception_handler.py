@@ -15,6 +15,8 @@ from src.application.base_exception import (
     EntityNotFoundError,
 )
 from src.domain.user.exeptions import (
+    EmailInvalidCharactersError,
+    EmailInvalidFormatError,
     PasswordInvalidCharactersError,
     PasswordInvalidDigitError,
     PasswordInvalidLowercaseError,
@@ -61,6 +63,8 @@ class ExceptionHandler:
             PasswordInvalidLowercaseError: status.HTTP_400_BAD_REQUEST,
             PasswordInvalidUppercaseError: status.HTTP_400_BAD_REQUEST,
             PasswordInvalidDigitError: status.HTTP_400_BAD_REQUEST,
+            EmailInvalidCharactersError: status.HTTP_400_BAD_REQUEST,
+            EmailInvalidFormatError: status.HTTP_400_BAD_REQUEST,
             # Ошибки "не найдено"
             EntityNotFoundError: status.HTTP_404_NOT_FOUND,
             # Авторизация/аутентификация
