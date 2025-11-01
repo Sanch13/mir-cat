@@ -1,6 +1,18 @@
 from src.domain.base_domain_ecxeptions import DomainError
 
 
+class EmailInvalidFormatError(DomainError):
+    """Email invalid format error."""
+
+    MESSAGE_TEMPLATE = "The email has invalid format: {violated_rule}."
+
+
+class EmailInvalidCharactersError(DomainError):
+    """The email contains invalid characters"""
+
+    MESSAGE_TEMPLATE = "The email contains invalid characters! {errors}"
+
+
 class PasswordTooShortError(DomainError):
     """The password is too short"""
 
