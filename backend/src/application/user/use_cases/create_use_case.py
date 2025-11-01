@@ -34,11 +34,4 @@ class UserCreateUseCase:
 
         await self.user_repo.save(user_entity)
 
-        data = user_entity.email.value
-        # TODO: обсудить! будем отправлять на email приветствие? или пока taskiq выкл
-        await self.email_notification_service.send_email(
-            to_email="korneva.ol.lv@gmail.com",
-            data=data,
-        )
-
         return UserDomainMapper.entity_to_output_dto(user_entity)

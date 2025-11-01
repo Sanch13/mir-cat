@@ -2,16 +2,14 @@ import uuid
 from datetime import UTC, datetime, timedelta
 
 import jwt
-from redis.asyncio import Redis as AsyncRedis
 
 from src.config.settings import Settings
 from src.domain.user.entity import UserEntity
 
 
 class JWTService:
-    def __init__(self, settings: Settings, redis_client: AsyncRedis):
+    def __init__(self, settings: Settings):
         self.settings = settings.jwt
-        self.redis_client = redis_client
 
     async def create_access_token(self, user_entity: UserEntity) -> str:
         minutes = self.settings.ACCESS_TOKEN_LIFETIME_MINUTES
@@ -31,24 +29,27 @@ class JWTService:
         access_token = jwt.encode(payload=payload, key=secret_key, algorithm=algorithm)
         return access_token
 
-    async def create_refresh_token(self, user_entity: UserEntity) -> str:
+    async def create_refresh_token(self, user_entity: UserEntity) -> tuple:
         days = self.settings.REFRESH_TOKEN_LIFETIME_DAYS
         now = datetime.now(UTC)
-        exp = int((now + timedelta(days=days)).timestamp())
+
+        sub = str(user_entity.id.value)
+        expires_at = int((now + timedelta(days=days)).timestamp())
         iat = int(now.timestamp())
+        jti = str(uuid.uuid4())
 
         payload = {
-            "sub": str(user_entity.id.value),
-            "exp": exp,
+            "sub": sub,
+            "exp": expires_at,
             "iat": iat,
-            "jti": str(uuid.uuid4()),
+            "jti": jti,
             "type": "refresh",
         }
 
         secret_key = self.settings.private_key
         algorithm = self.settings.ALGORITHM
         refresh_token = jwt.encode(payload=payload, key=secret_key, algorithm=algorithm)
-        return refresh_token
+        return refresh_token, payload
 
     async def verify_access_token(self, token: str) -> dict | None:
         """Проверка access token"""

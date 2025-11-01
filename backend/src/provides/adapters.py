@@ -11,13 +11,15 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from src.application.auth.services.auth_token_service import AuthTokenService
 from src.application.auth.services.auth_user_service import AuthenticateUserService
-from src.application.interfaces import IEmailNotificationService
+from src.application.interfaces import IEmailNotificationService, IRefreshTokenRepository
 from src.application.services import EmailNotificationServiceImpl
 from src.application.user.irepo import IUserRepository
 from src.config import all_settings
 from src.config.settings import Settings
 from src.domain.user.interfaces import IPasswordHasher
+from src.infrastructure.data_access.token_repository import RedisRefreshTokenRepository
 from src.infrastructure.data_access.users.repository import UserRepository
 from src.infrastructure.services import PasswordHasherImpl
 from src.infrastructure.services.current_user.current_user_service import GetCurrentUserService
@@ -102,6 +104,9 @@ class EmailNotificationServiceProvider(Provider):
 
 class RepositoryProvider(Provider):
     user_repository = provide(source=UserRepository, scope=Scope.REQUEST, provides=IUserRepository)
+    token_repository = provide(
+        source=RedisRefreshTokenRepository, scope=Scope.REQUEST, provides=IRefreshTokenRepository
+    )
 
 
 class PasswordHasherProvider(Provider):
@@ -116,10 +121,18 @@ class AuthenticateUserServiceProvider(Provider):
         return AuthenticateUserService(user_repo, hasher)
 
 
+class AuthTokenServiceServiceProvider(Provider):
+    @provide(scope=Scope.REQUEST)
+    def provide_auth_token_service(
+        self, jwt_service: JWTService, token_repository: IRefreshTokenRepository
+    ) -> AuthTokenService:
+        return AuthTokenService(jwt_service, token_repository)
+
+
 class JWTServiceProvider(Provider):
     @provide(scope=Scope.REQUEST)
-    def provide_jwt_service(self, settings: Settings, redis_client: AsyncRedis) -> JWTService:
-        return JWTService(settings, redis_client)
+    def provide_jwt_service(self, settings: Settings) -> JWTService:
+        return JWTService(settings)
 
 
 class GetCurrentUserProvider(Provider):
