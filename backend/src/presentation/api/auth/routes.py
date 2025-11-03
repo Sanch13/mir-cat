@@ -1,7 +1,8 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Cookie, Request, Response
 
 from src.application.auth.use_case.auth_use_case import AuthUserUseCase
+from src.application.auth.use_case.refresh_token_use_case import RefreshTokenUseCase
 from src.presentation.api.auth.mappers import AuthUserApiMapper
 from src.presentation.api.auth.schemas import TokenOutSchema, UserAuthSchema
 
@@ -33,9 +34,18 @@ async def login_user(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=True,  # в dev можно False, в проде True (только по HTTPS)
+        secure=False,  # в dev можно False, в проде True (только по HTTPS)
         samesite="strict",  # lax удобнее для обычных навигаций; strict — самый безопасный.
-        path="/auth/refresh",  # ограничить область действия cookie
+        path="/api/v1/auth",  # ограничить область действия cookie
         max_age=max_age,
     )
     return AuthUserApiMapper.dict_to_schema(data_out)
+
+
+@router.post("/refresh")
+async def refresh(
+    response: Response,
+    use_case: FromDishka[RefreshTokenUseCase],
+    refresh_token: str | None = Cookie(None),
+):
+    return await use_case.execute(refresh_token=refresh_token)

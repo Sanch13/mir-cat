@@ -25,6 +25,7 @@ class RedisRefreshTokenRepository(IRefreshTokenRepository):
 
     async def exists(self, user_id: str, jti: str) -> bool:
         key = self._make_key(user_id, jti)
+        print(key)
         return bool(await self.redis.exists(key))
 
     async def delete(self, user_id: str, jti: str) -> None:

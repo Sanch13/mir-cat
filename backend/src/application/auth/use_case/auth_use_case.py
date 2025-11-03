@@ -21,4 +21,6 @@ class AuthUserUseCase:
         if user_entity is None:
             raise UnauthorizedError
 
-        return await self.token_service.create_token_pair(user_entity)
+        data, payload = await self.token_service.create_token_pair(str(user_entity.id.value))
+        await self.token_service.save_refresh_token(payload)
+        return data
