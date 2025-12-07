@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings
 from src.config.db_settings import DBSettings
 from src.config.jwt_settings import JWTSettings
 from src.config.redis_settings import RedisSettings
+from src.config.sentry_settings import SentrySettings
 from src.config.server_settings import ServerSettings
 from src.config.smtp_settings import SMTPSettings
 
@@ -13,6 +14,7 @@ class Settings(BaseSettings):
     smtp: SMTPSettings = SMTPSettings()
     server: ServerSettings = ServerSettings()
     jwt: JWTSettings = JWTSettings()
+    sentry: SentrySettings = SentrySettings()
 
 
 settings = Settings()

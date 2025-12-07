@@ -1,5 +1,6 @@
 from uuid import UUID
 
+import structlog
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPBearer
@@ -12,13 +13,18 @@ from src.presentation.api.user.schemas import UserCreateSchema, UserResponseSche
 
 router = APIRouter(route_class=DishkaRoute)
 
+logger = structlog.get_logger()
+
 
 @router.post("/", status_code=201, response_model=UserResponseSchema)
 async def create(
     user_data: UserCreateSchema,
     use_case: FromDishka[UserCreateUseCase],
 ) -> UserResponseSchema:
+    log = logger.bind(email=user_data.email, action="create_user")
+    log.info("api_request_received")
     dto_out = await use_case.execute(UserApiMapper.schema_to_dto(user_data))
+    log.info("api_request_finished", user_id=str(dto_out.id))
     return UserApiMapper.dto_to_schema(dto_out)
 
 
@@ -33,8 +39,12 @@ async def get_user_by_id(
     use_case: FromDishka[UserGetByIdUseCase],
     auth_jwt_service: FromDishka[GetCurrentUserService],
 ) -> UserResponseSchema:
+    log = logger.bind(action="get_user_by_id")
+    log.info("routes_get_user_by_id_started")
     user_id = await auth_jwt_service.get_current_user_id(request)
+    log.info(user_id=str(user_id))
     dto_out = await use_case.execute(user_id)
+    log.info("routes_get_user_by_id_finished")
     return UserApiMapper.dto_to_schema(dto_out)
 
 

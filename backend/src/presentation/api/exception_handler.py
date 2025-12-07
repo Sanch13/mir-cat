@@ -13,6 +13,9 @@ from src.application.base_exception import (
     DatabaseTimedOutError,
     DuplicateEntityError,
     EntityNotFoundError,
+    TokenAccessDoesNotExistError,
+    TokenInvalidError,
+    TokenRefreshExpireError,
 )
 from src.domain.user.exeptions import (
     EmailInvalidCharactersError,
@@ -69,9 +72,11 @@ class ExceptionHandler:
             EntityNotFoundError: status.HTTP_404_NOT_FOUND,
             # Авторизация/аутентификация
             UnauthorizedError: status.HTTP_401_UNAUTHORIZED,
+            TokenInvalidError: status.HTTP_401_UNAUTHORIZED,
             # InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
             # TokenExpireError: status.HTTP_401_UNAUTHORIZED,
-            # TokenRefreshExpireError: status.HTTP_401_UNAUTHORIZED,
+            TokenAccessDoesNotExistError: status.HTTP_401_UNAUTHORIZED,
+            TokenRefreshExpireError: status.HTTP_401_UNAUTHORIZED,
             # InviteTokenExpiredError: status.HTTP_401_UNAUTHORIZED,
             # NotActivationExpire: status.HTTP_401_UNAUTHORIZED,
             # TokenExpiredError: status.HTTP_401_UNAUTHORIZED,

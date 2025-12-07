@@ -71,6 +71,24 @@ class ExternalServiceError(ApplicationError):
     DEFAULT_MESSAGE = "External service error"
 
 
+class TokenInvalidError(ApplicationError):
+    """"""
+
+    DEFAULT_MESSAGE = "The token is not valid"
+
+
+class TokenRefreshExpireError(ApplicationError):
+    """"""
+
+    DEFAULT_MESSAGE = "The token does not exist"
+
+
+class TokenAccessDoesNotExistError(ApplicationError):
+    """"""
+
+    DEFAULT_MESSAGE = "The token does not exist"
+
+
 # class UseCaseError(ApplicationError):
 #     """Базовое исключение для Use Cases"""
 #

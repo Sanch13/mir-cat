@@ -1,4 +1,5 @@
 from src.application.user.irepo import IUserRepository
+from src.core.tracing import traced
 from src.domain.user.dtos import UserAuthInputDto
 from src.domain.user.entity import UserEntity
 from src.domain.user.interfaces import IPasswordHasher
@@ -13,6 +14,7 @@ class AuthenticateUserService:
         self.user_repo = user_repo
         self.hasher = hasher
 
+    @traced(name="AuthenticateUserService.authenticate_user")
     async def authenticate_user(self, dto: UserAuthInputDto) -> None | UserEntity:
         user_entity = await self.user_repo.get_by_email(email=dto.email)
 

@@ -4,7 +4,9 @@ from datetime import UTC, datetime, timedelta
 import jwt
 from fastapi import HTTPException
 
+from src.application.base_exception import TokenInvalidError
 from src.config.settings import Settings
+from src.core.tracing import traced
 
 
 class JWTService:
@@ -52,25 +54,27 @@ class JWTService:
         refresh_token = jwt.encode(payload=payload, key=secret_key, algorithm=algorithm)
         return refresh_token, payload
 
-    async def verify_access_token(self, token: str) -> dict | None:
+    @traced(name="jwt.verify_access_token")
+    async def verify_access_token(self, token: str) -> dict:
         """Проверка access token"""
         try:
             payload = jwt.decode(
                 jwt=token,
                 key=self.settings.public_key,
-                algorithms=self.settings.ALGORITHM,
+                algorithms=[self.settings.ALGORITHM],
             )
-            return payload
-        # TODO: Сделать отдельную ошибку
-        except Exception:
-            return None
 
-    async def verify_refresh_token(self, refresh_token: str | None) -> dict | None:
+            return payload
+        except jwt.InvalidTokenError:
+            raise TokenInvalidError
+
+    @traced(name="jwt.verify_refresh_token")
+    async def verify_refresh_token(self, refresh_token: str | None) -> dict:
         """
         Проверка refresh токена
         """
-        if not refresh_token:
-            raise HTTPException(status_code=401, detail="Refresh token missing!!!")
+        if refresh_token is None:
+            raise HTTPException(status_code=401, detail="Refresh token missing")
 
         try:
             payload = jwt.decode(
@@ -79,6 +83,5 @@ class JWTService:
                 algorithms=[self.settings.ALGORITHM],
             )
             return payload
-        # TODO: Сделать отдельную ошибку
-        except Exception:
-            return None
+        except jwt.InvalidTokenError:
+            raise TokenInvalidError

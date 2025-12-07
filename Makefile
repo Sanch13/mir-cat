@@ -26,6 +26,10 @@ app-logs:  # запускает приложение с логами в конс
 	@$(MAKE) app-sync
 	@${DC} -f ${LOCAL_FILE} up --build
 
+.PHONY: app-logs-down
+app-logs-down:  # запускает приложение с логами в консоли
+	@${DC} -f ${LOCAL_FILE} down
+
 .PHONY: app
 app:  # запускает приложение и применяет все миграции
 	@${DC} -f ${LOCAL_FILE} up --build -d

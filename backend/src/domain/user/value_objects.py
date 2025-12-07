@@ -2,6 +2,8 @@ import re
 from dataclasses import dataclass
 from typing import ClassVar
 
+import structlog
+
 from src.domain.user.exeptions import (
     EmailInvalidCharactersError,
     EmailInvalidFormatError,
@@ -15,6 +17,8 @@ from src.domain.user.exeptions import (
 from src.domain.user.interfaces import IPasswordHasher
 from src.shared.exceptions import InvalidTypeError
 from src.shared.value_objects import DatetimeVo, StrWithSizeVo, UuidVo
+
+logger = structlog.get_logger()
 
 MIN_EMAIL_LENGTH = 5
 MAX_EMAIL_LENGTH = 254
@@ -358,7 +362,10 @@ class PasswordHashVo:
     # --- локальные правила валидации пароля (доменная логика) ---
     @staticmethod
     def _validate_plain(plain_password: str):
+        log = logger.bind(validation="password_rules")
+
         if not isinstance(plain_password, str):
+            log.error("invalid_type_provided", actual_type=type(plain_password).__name__)
             raise InvalidTypeError(
                 message_to_extend={
                     "expected_type": "string",
@@ -371,6 +378,7 @@ class PasswordHashVo:
         length = len(password)
 
         if MIN_PASSWORD_LENGTH is not None and length < MIN_PASSWORD_LENGTH:
+            log.warning("password_too_short", current_length=length, min_length=MIN_PASSWORD_LENGTH)
             raise PasswordTooShortError(
                 message_to_extend={
                     "attr_name": "PasswordHashVo",
@@ -381,6 +389,7 @@ class PasswordHashVo:
             )
 
         if MAX_PASSWORD_LENGTH is not None and length > MAX_PASSWORD_LENGTH:
+            log.warning("password_too_long", current_length=length, max_length=MAX_PASSWORD_LENGTH)
             raise PasswordTooLongError(
                 message_to_extend={
                     "attr_name": "PasswordHashVo",
@@ -391,6 +400,7 @@ class PasswordHashVo:
             )
 
         if not PASSWORD_RULES_REGEX["latin_only"].match(password):
+            log.warning("password_invalid_chars")
             raise PasswordInvalidCharactersError(
                 message_to_extend={
                     "attr_name": "PasswordHashVo",
@@ -398,12 +408,15 @@ class PasswordHashVo:
                 }
             )
         if not PASSWORD_RULES_REGEX["lowercase"].search(password):
+            log.warning("The password must contain at least one lowercase letter (a-z)")
             raise PasswordInvalidLowercaseError()
 
         if not PASSWORD_RULES_REGEX["uppercase"].search(password):
+            log.warning("The password must contain at least one uppercase letter (A-Z)")
             raise PasswordInvalidUppercaseError()
 
         if not PASSWORD_RULES_REGEX["digit"].search(password):
+            log.warning("The password must contain at least one number (0-9)")
             raise PasswordInvalidDigitError()
 
         # if not PASSWORD_RULES_REGEX["special"].search(password):
