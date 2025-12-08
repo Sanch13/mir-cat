@@ -4,9 +4,9 @@ global:
 
 scrape_configs:
   # Задача 1: Собирать метрики с самого Прометеуса (мониторинг мониторинга)
-  - job_name: 'prometheus'
+  - job_name: 'victoriametrics'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['localhost:8428']
 
   # Задача 2: Собирать метрики с твоего FastAPI
   - job_name: 'fastapi_app'

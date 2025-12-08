@@ -162,27 +162,46 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - loki
-      - prometheus
+      - victoriametrics
       - tempo
     networks:
       - local
     volumes:
       - grafana_data:/var/lib/grafana
 
-  prometheus:
-    image: prom/prometheus:v3.8.0
-    container_name: prometheus
+#  prometheus:
+#    image: prom/prometheus:v3.8.0
+#    container_name: prometheus
+#    ports:
+#      - "9090:9090"
+#    volumes:
+#      - ./backend/observability/prometheus.yaml:/etc/prometheus/prometheus.yml
+#      - prometheus_data:/prometheus
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#      - '--storage.tsdb.path=/prometheus'
+#      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+#      - '--web.console.templates=/usr/share/prometheus/consoles'
+#      - '--web.enable-lifecycle' # Позволяет перезагружать конфиг на лету
+#    networks:
+#      - local
+#    restart: unless-stopped
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.131.0
+    container_name: victoriametrics
     ports:
-      - "9090:9090"
+      - "8428:8428" # Порт VM (вместо 9090 у Prometheus)
     volumes:
+      # Мы используем ТОТ ЖЕ конфиг, что был у Прометеуса! VM его понимает.
       - ./backend/observability/prometheus.yaml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
+      # Хранилище данных
+      - vm_data:/victoria-metrics-data
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-      - '--web.enable-lifecycle' # Позволяет перезагружать конфиг на лету
+      - "-promscrape.config=/etc/prometheus/prometheus.yml" # Включаем сбор метрик
+      - "-storageDataPath=/victoria-metrics-data"         # Куда сохранять
+      - "-retentionPeriod=1y"                             # Хранить метрики 1 год (VM это позволяет легко)
+      - "-promscrape.config.strictParse=false"
     networks:
       - local
     restart: unless-stopped
@@ -211,5 +230,5 @@ volumes:
   redis_data:
   grafana_data:
   loki_data:
-  prometheus_data:
+  vm_data:
   tempo_data:
