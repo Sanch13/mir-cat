@@ -1,0 +1,41 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2020-10-24
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+#compactor:
+#  # Папка для работы компактора (временные файлы и пр.)
+#  working_directory: /loki/compactor
+#  # Включаем удаление старых данных
+#  retention_enabled: true
+#  # Интервал проверки на удаление (по умолчанию 10m)
+#  compaction_interval: 10m
+#  # Задержка перед окончательным удалением (защита от случайного удаления)
+#  retention_delete_delay: 2h
+#  # Количество воркеров для удаления (можно увеличить, если логов очень много)
+#  retention_delete_worker_count: 150
+#
+#limits_config:
+#  retention_period: 720h

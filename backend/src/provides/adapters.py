@@ -1,6 +1,7 @@
 from collections.abc import AsyncGenerator, AsyncIterable
 
 from dishka import Provider, Scope, provide
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis as AsyncRedis
 from sqlalchemy.exc import SQLAlchemyError
@@ -11,13 +12,19 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from src.application.auth.services.auth_token_service import AuthTokenService
 from src.application.auth.services.auth_user_service import AuthenticateUserService
-from src.application.interfaces import IEmailNotificationService
+from src.application.interfaces import (
+    IAuthTokenService,
+    IEmailNotificationService,
+    ITokenRepository,
+)
 from src.application.services import EmailNotificationServiceImpl
 from src.application.user.irepo import IUserRepository
 from src.config import all_settings
 from src.config.settings import Settings
 from src.domain.user.interfaces import IPasswordHasher
+from src.infrastructure.data_access.token_repository import RedisTokenRepository
 from src.infrastructure.data_access.users.repository import UserRepository
 from src.infrastructure.services import PasswordHasherImpl
 from src.infrastructure.services.current_user.current_user_service import GetCurrentUserService
@@ -34,7 +41,19 @@ class SettingsProvider(Provider):
 class SqlalchemyProvider(Provider):
     @provide(scope=Scope.APP)
     def provide_async_engine(self, settings: Settings) -> AsyncEngine:
-        return create_async_engine(settings.db.construct_sqlalchemy_url)
+        engine = create_async_engine(
+            url=settings.db.construct_sqlalchemy_url,
+            pool_size=settings.db.POOL_SIZE,
+            max_overflow=settings.db.MAX_OVERFLOW,
+            pool_timeout=settings.db.POOL_TIMEOUT,
+            pool_recycle=settings.db.POOL_RECYCLE,
+            pool_pre_ping=settings.db.POOL_PRE_PING,
+            pool_use_lifo=settings.db.POOL_USE_LIFO,
+            echo=settings.db.ECHO,
+            echo_pool=settings.db.ECHO_POOL,
+        )
+        SQLAlchemyInstrumentor().instrument(engine=engine.sync_engine)
+        return engine
 
     @provide(scope=Scope.APP)
     def provide_async_sessionmaker(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
@@ -102,6 +121,9 @@ class EmailNotificationServiceProvider(Provider):
 
 class RepositoryProvider(Provider):
     user_repository = provide(source=UserRepository, scope=Scope.REQUEST, provides=IUserRepository)
+    token_repository = provide(
+        source=RedisTokenRepository, scope=Scope.REQUEST, provides=ITokenRepository
+    )
 
 
 class PasswordHasherProvider(Provider):
@@ -116,10 +138,18 @@ class AuthenticateUserServiceProvider(Provider):
         return AuthenticateUserService(user_repo, hasher)
 
 
+class AuthTokenServiceServiceProvider(Provider):
+    @provide(scope=Scope.REQUEST)
+    def provide_auth_token_service(
+        self, jwt_service: JWTService, token_repository: ITokenRepository
+    ) -> IAuthTokenService:
+        return AuthTokenService(jwt_service, token_repository)
+
+
 class JWTServiceProvider(Provider):
     @provide(scope=Scope.REQUEST)
-    def provide_jwt_service(self, settings: Settings, redis_client: AsyncRedis) -> JWTService:
-        return JWTService(settings, redis_client)
+    def provide_jwt_service(self, settings: Settings) -> JWTService:
+        return JWTService(settings)
 
 
 class GetCurrentUserProvider(Provider):
@@ -127,7 +157,6 @@ class GetCurrentUserProvider(Provider):
 
     @provide
     def provide_get_current_user_service(
-        self,
-        jwt_service: JWTService,
+        self, token_service: IAuthTokenService
     ) -> GetCurrentUserService:
-        return GetCurrentUserService(jwt_service=jwt_service)
+        return GetCurrentUserService(token_service=token_service)

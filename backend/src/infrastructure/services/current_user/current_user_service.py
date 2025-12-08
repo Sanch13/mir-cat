@@ -1,8 +1,10 @@
 from uuid import UUID
 
+import structlog
 from fastapi import HTTPException, Request
 
-from src.infrastructure.services.jwt.jwt_service import JWTService
+from src.application.interfaces import IAuthTokenService
+from src.core.tracing import traced
 
 
 class GetCurrentUserService:
@@ -22,8 +24,8 @@ class GetCurrentUserService:
         jwt_service (JWTService): Service for JWT token operations
     """
 
-    def __init__(self, jwt_service: JWTService):
-        self.jwt_service = jwt_service
+    def __init__(self, token_service: IAuthTokenService):
+        self.token_service = token_service
 
     async def extract_bearer_token(self, request: Request) -> str:
         """
@@ -65,13 +67,24 @@ class GetCurrentUserService:
 
         return token
 
-    async def get_current_user_id(self, request: Request) -> UUID:
-        """Получаем user_id из Request"""
+    async def get_payload_from_access_token(self, request: Request) -> dict:
         token = await self.extract_bearer_token(request)
-        payload = await self.jwt_service.verify_access_token(token)
+        return await self.token_service.verify_access_token(token)
+
+    @traced(name="auth.get_current_user")
+    async def get_current_user_id(self, request: Request) -> UUID:
+        """Получаем user_id из payload"""
+        payload = await self.get_payload_from_access_token(request)
+        await self.is_access_token_in_blacklist(payload)
 
         user_id = payload.get("sub")
         if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token payload")
+            raise HTTPException(status_code=401, detail="Invalid payload. User not found")
 
+        structlog.contextvars.bind_contextvars(user_id=str(user_id))
         return UUID(user_id)
+
+    @traced(name="auth.check_blacklist")
+    async def is_access_token_in_blacklist(self, payload: dict) -> bool:
+        access_jti = payload.get("jti")
+        return await self.token_service.exists_access_token_in_blacklist(access_jti)

@@ -1,0 +1,26 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "0.0.0.0:4317"   # <--- ВАЖНО: Слушаем всех на порту 4317
+        http:
+          endpoint: "0.0.0.0:4318"   # <--- ВАЖНО: Слушаем всех на порту 4318
+
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /tmp/tempo/wal
+    local:
+      path: /tmp/tempo/blocks
+
+compactor:
+  compaction:
+    compaction_window: 1h
+    max_block_bytes: 100_000_000
+    block_retention: 48h            # <--- Хранить 2 дня
+    compacted_block_retention: 10m

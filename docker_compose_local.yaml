@@ -16,8 +16,12 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+      - loki
+      - tempo
     networks:
       - local
+    labels:
+      logging: "promtail"
 
   postgres:
     image: postgres:17.3-alpine
@@ -33,6 +37,8 @@ services:
     networks:
       - local
     restart: unless-stopped
+    labels:
+      logging: "promtail"
 
   nginx:
     image: nginx:1.29-alpine
@@ -46,6 +52,8 @@ services:
     networks:
       - local
     restart: unless-stopped
+    labels:
+      logging: "promtail"
 
   redis:
     image: redis:8.2-alpine
@@ -88,6 +96,8 @@ services:
       - local
     volumes:
       - ./backend/src:/app/src
+    labels:
+      logging: "promtail"
 
   taskiq_scheduler:
     build:
@@ -114,6 +124,83 @@ services:
       - local
     volumes:
       - ./backend/src:/app/src
+    labels:
+      logging: "promtail"
+
+  # ==========================================
+  # PLG STACK (Monitoring)
+  # ==========================================
+
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./backend/observability/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    networks:
+      - local
+
+  promtail:
+    image: grafana/promtail:3.0.0
+    container_name: promtail
+    volumes:
+      - ./backend/observability/promtail-config.yaml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - local
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - loki
+      - prometheus
+      - tempo
+    networks:
+      - local
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  prometheus:
+    image: prom/prometheus:v3.8.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./backend/observability/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle' # Позволяет перезагружать конфиг на лету
+    networks:
+      - local
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    user: root
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./backend/observability/tempo.yaml:/etc/tempo.yaml
+      - tempo_data:/tmp/tempo
+    ports:
+      - "3200:3200"   # Порт для админки/метрик
+      - "4317:4317"   # OTLP gRPC (сюда шлет Python)
+      # - "4318:4318" # OTLP HTTP (альтернатива)
+    networks:
+      - local
 
 networks:
   local:
@@ -122,3 +209,7 @@ networks:
 volumes:
   postgres_data:
   redis_data:
+  grafana_data:
+  loki_data:
+  prometheus_data:
+  tempo_data:
