@@ -1,6 +1,6 @@
 global:
   scrape_interval: 5s # Как часто собирать метрики (для локалки 5с ок, в проде 15с)
-  evaluation_interval: 5s
+#  evaluation_interval: 5s
 
 scrape_configs:
   # Задача 1: Собирать метрики с самого Прометеуса (мониторинг мониторинга)
